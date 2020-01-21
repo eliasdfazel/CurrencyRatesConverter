@@ -18,6 +18,7 @@ import xyz.world.currency.rate.converter.R
 import xyz.world.currency.rate.converter.data.RecyclerViewItemsDataStructure
 import xyz.world.currency.rate.converter.data.download.UpdateCloudData
 import xyz.world.currency.rate.converter.data.room.DatabasePath
+import xyz.world.currency.rate.converter.utils.extensions.formatToThreeDigitAfterPoint
 import xyz.world.currency.rate.converter.utils.saved.CountryData
 
 class CurrencyAdapter(var context: Context) : RecyclerView.Adapter<ItemViewHolder>() {

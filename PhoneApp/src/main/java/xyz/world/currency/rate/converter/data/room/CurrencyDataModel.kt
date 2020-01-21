@@ -6,7 +6,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import xyz.world.currency.rate.converter.data.room.DatabasePath
 
-@Entity(tableName = DatabasePath.CURRENCY_DATABASE)
+@Entity(tableName = DatabasePath.CURRENCY_DATABASE_NAME)
 data class CurrencyDataModel(
         @NonNull @PrimaryKey var CurrencyCode: String,
 

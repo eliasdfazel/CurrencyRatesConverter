@@ -17,8 +17,8 @@ interface CurrencyDataDAO {
     fun deleteData(currencyDataModel: CurrencyDataModel)
 
 
-//    @Query("SELECT * FROM WidgetData ORDER BY AppName ASC")
-//    fun getAllWidgetData(): List<CurrencyDataModel>
+    @Query("SELECT * FROM CurrencyRates ORDER BY CurrencyCode ASC")
+    fun getAllWidgetData(): List<CurrencyDataModel>
 //
 //    @Query("SELECT * FROM WidgetData ORDER BY AppName ASC")
 //    suspend fun getAllWidgetDataCoroutines(): List<CurrencyDataModel>

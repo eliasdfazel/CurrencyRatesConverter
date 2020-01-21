@@ -11,8 +11,8 @@ class AddNewTable {
         val supportSQLiteDatabase: SupportSQLiteDatabase = roomDatabase.openHelper.writableDatabase
         return try {
             supportSQLiteDatabase.execSQL(
-                DatabasePath.CREATE_DATABASE_TABLE.replace(
-                    DatabasePath.CURRENCY_DATABASE,
+                DatabasePath.CREATE_DATABASE_TABLE_COMMAND.replace(
+                    DatabasePath.CURRENCY_DATABASE_NAME,
                     databaseName
                 )
             )
@@ -22,6 +22,8 @@ class AddNewTable {
             e.printStackTrace()
 
             false
+        } finally {
+          //  roomDatabase.close()
         }
     }
 }
