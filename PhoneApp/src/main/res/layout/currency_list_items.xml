@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/mainView"
+    android:layout_width="match_parent"
+    android:layout_height="83dp"
+    android:layout_marginTop="1dp"
+    android:layout_marginBottom="1dp"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:paddingTop="3dp"
+    android:paddingBottom="3dp"
+    android:background="@drawable/ripple_effect_list">
+
+    <ImageView
+        android:id="@+id/countryFlag"
+        android:layout_width="71dp"
+        android:layout_height="71dp"
+        android:padding="5dp"
+        android:scaleType="fitCenter"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/currencyName"
+        android:layout_width="wrap_content"
+        android:layout_height="45dp"
+        android:gravity="center_vertical"
+        android:paddingStart="17dp"
+        android:paddingEnd="13dp"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"
+        android:textSize="23sp"
+        android:textColor="@color/colorPrimaryDark"
+        android:fontFamily="monospace"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/countryFlag" />
+
+    <TextView
+        android:id="@+id/currencyCountry"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:paddingStart="17dp"
+        android:paddingEnd="13dp"
+        android:textSize="12sp"
+        android:textColor="@color/grayCountryName"
+        android:fontFamily="monospace"
+        app:layout_constraintTop_toBottomOf="@id/currencyName"
+        app:layout_constraintBottom_toBottomOf="@id/countryFlag"
+        app:layout_constraintStart_toEndOf="@id/countryFlag" />
+
+    <TextView xmlns:apps="http://schemas.android.com/tools"
+        android:id="@+id/currencyRate"
+        android:layout_width="wrap_content"
+        android:layout_height="71dp"
+        android:gravity="center"
+        android:padding="9dp"
+        android:textSize="19sp"
+        android:textColor="@color/colorPrimaryDark"
+        apps:backgroundTint="@color/colorAccent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#FFFFFF</color>
+    <color name="colorPrimaryDark">#333333</color>
+    <color name="colorAccent">#01a0c7</color>
+
+    <color name="signInRipple">#E91E63</color>
+    <color name="rippleColor">#6D01A0C7</color>
+
+    <color name="splashColor">#FFFFFF</color>
+    <color name="mainColor">#FFFFFF</color>
+    <color name="grayCountryName">#80333333</color>
+</resources>

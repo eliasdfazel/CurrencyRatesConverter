@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "132285060915",
+    "firebase_url": "https://currencyrateconverter.firebaseio.com",
+    "project_id": "currencyrateconverter",
+    "storage_bucket": "currencyrateconverter.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:132285060915:android:3d4d3b1d3c75b8298f5046",
+        "android_client_info": {
+          "package_name": "xyz.world.currency.rate.converter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "132285060915-k4hpnlqjo4upkfgns132d06ighgea7pd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC-9P580JVxJ1FM5LARRtWV8hHmjl72V6s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "132285060915-k4hpnlqjo4upkfgns132d06ighgea7pd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
