@@ -13,7 +13,7 @@ import kotlinx.android.synthetic.main.currency_list_view.*
 import kotlinx.android.synthetic.main.entry_configurations.*
 import xyz.world.currency.rate.converter.R
 import xyz.world.currency.rate.converter.data.CurrencyDataViewModel
-import xyz.world.currency.rate.converter.data.ItemsDataStructure
+import xyz.world.currency.rate.converter.data.RecyclerViewItemsDataStructure
 import xyz.world.currency.rate.converter.ui.adapter.CurrencyAdapter
 import xyz.world.currency.rate.converter.ui.adapter.CustomLinearLayoutManager
 import xyz.world.currency.rate.converter.utils.checkpoints.NetworkConnectionListener
@@ -26,6 +26,8 @@ class CurrencyList : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
 
     }
 
@@ -49,8 +51,8 @@ class CurrencyList : Fragment() {
             .of(this@CurrencyList)
             .get(CurrencyDataViewModel::class.java)
 
-        currencyDataViewModel.itemsCurrencyData.observe(viewLifecycleOwner,
-            Observer<ArrayList<ItemsDataStructure>> {
+        currencyDataViewModel.recyclerViewItemsCurrencyData.observe(viewLifecycleOwner,
+            Observer<ArrayList<RecyclerViewItemsDataStructure>> {
                 if (it.size > 0) {
                     progressBar.visibility = View.GONE
                     activity!!.toolbarOption.setImageDrawable(context?.getDrawable(R.drawable.refresh_icon))
@@ -59,7 +61,7 @@ class CurrencyList : Fragment() {
                 }
 
                 currencyAdapter = CurrencyAdapter(context!!)
-                currencyAdapter?.itemsDataStructure = it
+                currencyAdapter?.recyclerViewItemsDataStructure = it
 
                 loadView.adapter = currencyAdapter
                 currencyAdapter!!.notifyDataSetChanged()
@@ -67,9 +69,9 @@ class CurrencyList : Fragment() {
                 Log.d("LiveData", "Observing ItemsDataStructure")
             })
 
-        currencyDataViewModel.itemsCurrencyRate.observe(viewLifecycleOwner,
-            Observer<ArrayList<ItemsDataStructure>> { payloadData ->
-                currencyAdapter?.itemsDataStructurePayload = payloadData
+        currencyDataViewModel.recyclerViewItemsCurrencyRate.observe(viewLifecycleOwner,
+            Observer<ArrayList<RecyclerViewItemsDataStructure>> { payloadData ->
+                currencyAdapter?.recyclerViewItemsDataStructurePayload = payloadData
                 currencyAdapter?.notifyItemRangeChanged(0, currencyAdapter!!.itemCount, payloadData)
 
                 Log.d("LiveData", "Observing ItemsCurrencyRate")

@@ -15,10 +15,9 @@ import com.bumptech.glide.request.RequestListener
 import com.google.firebase.firestore.FirebaseFirestore
 import xyz.learn.world.heritage.SavedData.PreferencesHandler
 import xyz.world.currency.rate.converter.R
-import xyz.world.currency.rate.converter.data.DatabasePath
-import xyz.world.currency.rate.converter.data.ItemsDataStructure
-import xyz.world.currency.rate.converter.data.UpdateCloudData
-import xyz.world.currency.rate.converter.utils.extensions.formatToThreeDigitAfterPoint
+import xyz.world.currency.rate.converter.data.RecyclerViewItemsDataStructure
+import xyz.world.currency.rate.converter.data.download.UpdateCloudData
+import xyz.world.currency.rate.converter.data.room.DatabasePath
 import xyz.world.currency.rate.converter.utils.saved.CountryData
 
 class CurrencyAdapter(var context: Context) : RecyclerView.Adapter<ItemViewHolder>() {
@@ -27,8 +26,8 @@ class CurrencyAdapter(var context: Context) : RecyclerView.Adapter<ItemViewHolde
 
     var recyclerView: RecyclerView? = null
 
-    var itemsDataStructure: ArrayList<ItemsDataStructure> = ArrayList<ItemsDataStructure>()
-    var itemsDataStructurePayload: ArrayList<ItemsDataStructure> = ArrayList<ItemsDataStructure>()
+    var recyclerViewItemsDataStructure: ArrayList<RecyclerViewItemsDataStructure> = ArrayList<RecyclerViewItemsDataStructure>()
+    var recyclerViewItemsDataStructurePayload: ArrayList<RecyclerViewItemsDataStructure> = ArrayList<RecyclerViewItemsDataStructure>()
 
     var updateFirstRowPayload: Boolean = false
     var multiplyNumber: Double = 1.0
@@ -52,21 +51,21 @@ class CurrencyAdapter(var context: Context) : RecyclerView.Adapter<ItemViewHolde
 
     override fun getItemCount(): Int {
 
-        return itemsDataStructure.size
+        return recyclerViewItemsDataStructure.size
     }
 
     override fun onBindViewHolder(itemViewHolder: ItemViewHolder, position: Int, payloads: MutableList<Any>) {
         if (payloads.isNotEmpty()) {
-            Log.d("PayLoads Update", "${itemsDataStructurePayload[position].currencyCode} ::: ${itemsDataStructurePayload[position].currencyRate}")
+            Log.d("PayLoads Update", "${recyclerViewItemsDataStructurePayload[position].currencyCode} ::: ${recyclerViewItemsDataStructurePayload[position].currencyRate}")
 
-            itemViewHolder.currencyRate.text = (itemsDataStructurePayload[position].currencyRate?.times(multiplyNumber)!!.formatToThreeDigitAfterPoint())
-            itemViewHolder.currencyName.text = itemsDataStructurePayload[position].currencyCode
-            firestore.document(DatabasePath.FIRESTORE_REFERENCE_DIRECTORY + itemsDataStructurePayload[position].currencyCode).get().addOnSuccessListener {
+            itemViewHolder.currencyRate.text = (recyclerViewItemsDataStructurePayload[position].currencyRate?.times(multiplyNumber)!!.formatToThreeDigitAfterPoint())
+            itemViewHolder.currencyName.text = recyclerViewItemsDataStructurePayload[position].currencyCode
+            firestore.document(DatabasePath.FIRESTORE_REFERENCE_DIRECTORY + recyclerViewItemsDataStructurePayload[position].currencyCode).get().addOnSuccessListener {
                 itemViewHolder.currencyCountry.text = it.getString("CountryName")
             }
 
             Glide.with(context)
-                .load(CountryData().flagCountryLink(itemsDataStructurePayload[position].currencyCode!!.toLowerCase()))
+                .load(CountryData().flagCountryLink(recyclerViewItemsDataStructurePayload[position].currencyCode!!.toLowerCase()))
                 .diskCacheStrategy(DiskCacheStrategy.DATA)
                 .into(itemViewHolder.countryFlag)
         } else {
@@ -75,16 +74,16 @@ class CurrencyAdapter(var context: Context) : RecyclerView.Adapter<ItemViewHolde
     }
 
     override fun onBindViewHolder(itemViewHolder: ItemViewHolder, position: Int) {
-        Log.d("Full Update", "${itemsDataStructure[position].currencyCode} ::: ${itemsDataStructure[position].currencyRate}")
+        Log.d("Full Update", "${recyclerViewItemsDataStructure[position].currencyCode} ::: ${recyclerViewItemsDataStructure[position].currencyRate}")
 
-        itemViewHolder.currencyRate.text = ((itemsDataStructure[position].currencyRate!!.times(multiplyNumber)).formatToThreeDigitAfterPoint())
-        itemViewHolder.currencyName.text = itemsDataStructure[position].currencyCode
-        firestore.document(DatabasePath.FIRESTORE_REFERENCE_DIRECTORY + itemsDataStructure[position].currencyCode).get().addOnSuccessListener {
+        itemViewHolder.currencyRate.text = ((recyclerViewItemsDataStructure[position].currencyRate!!.times(multiplyNumber)).formatToThreeDigitAfterPoint())
+        itemViewHolder.currencyName.text = recyclerViewItemsDataStructure[position].currencyCode
+        firestore.document(DatabasePath.FIRESTORE_REFERENCE_DIRECTORY + recyclerViewItemsDataStructure[position].currencyCode).get().addOnSuccessListener {
             itemViewHolder.currencyCountry.text = it.getString("CountryName")
         }
 
         Glide.with(context)
-            .load(CountryData().flagCountryLink(itemsDataStructure[position].currencyCode!!.toLowerCase()))
+            .load(CountryData().flagCountryLink(recyclerViewItemsDataStructure[position].currencyCode!!.toLowerCase()))
             .diskCacheStrategy(DiskCacheStrategy.DATA)
             .listener(object : RequestListener<Drawable> {
                 override fun onLoadFailed(glideException: GlideException?, any: Any?, target: com.bumptech.glide.request.target.Target<Drawable>?, boolean: Boolean): Boolean { return false }

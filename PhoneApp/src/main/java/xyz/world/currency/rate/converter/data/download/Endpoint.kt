@@ -1,4 +1,4 @@
-package xyz.world.currency.rate.converter.data
+package xyz.world.currency.rate.converter.data.download
 
 class Endpoint {
     private val API_KEY: String = "3057d94042a99324b134799aa7c252f9"

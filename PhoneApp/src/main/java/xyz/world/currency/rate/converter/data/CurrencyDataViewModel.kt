@@ -7,20 +7,20 @@ import kotlinx.coroutines.*
 
 class CurrencyDataViewModel : ViewModel() {
 
-    val itemsCurrencyData: MutableLiveData<ArrayList<ItemsDataStructure>> by lazy {
-        MutableLiveData<ArrayList<ItemsDataStructure>>()
+    val recyclerViewItemsCurrencyData: MutableLiveData<ArrayList<RecyclerViewItemsDataStructure>> by lazy {
+        MutableLiveData<ArrayList<RecyclerViewItemsDataStructure>>()
     }
 
     val baseCurrency: MutableLiveData<String> by lazy {
         MutableLiveData<String>()
     }
 
-    val itemsCurrencyRate: MutableLiveData<ArrayList<ItemsDataStructure>> by lazy {
-        MutableLiveData<ArrayList<ItemsDataStructure>>()
+    val recyclerViewItemsCurrencyRate: MutableLiveData<ArrayList<RecyclerViewItemsDataStructure>> by lazy {
+        MutableLiveData<ArrayList<RecyclerViewItemsDataStructure>>()
     }
 
-    private val itemsDataStructure: ArrayList<ItemsDataStructure> = ArrayList<ItemsDataStructure>()
-    private val itemsRatesStructure: ArrayList<ItemsDataStructure> = ArrayList<ItemsDataStructure>()
+    private val recyclerViewItemsDataStructure: ArrayList<RecyclerViewItemsDataStructure> = ArrayList<RecyclerViewItemsDataStructure>()
+    private val recyclerViewItemsRatesStructure: ArrayList<RecyclerViewItemsDataStructure> = ArrayList<RecyclerViewItemsDataStructure>()
 
     /**
      * Loading Data for the First Time from Public API for Unregistered Users.
@@ -28,22 +28,22 @@ class CurrencyDataViewModel : ViewModel() {
     @ExperimentalCoroutinesApi
     fun loadDataFromRetrofitResult(baseCurrency: String, itemsData: Map<String, Double>) =  CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
         Log.d("ItemDataStructure All Retrofit", "Adding To ArrayList")
-        itemsDataStructure.clear()
+        recyclerViewItemsDataStructure.clear()
 
-        itemsDataStructure.add(ItemsDataStructure(
+        recyclerViewItemsDataStructure.add(RecyclerViewItemsDataStructure(
             baseCurrency,
             1.0
         ))
 
         itemsData.forEach { (currencyName, currencyRate) ->
-            itemsDataStructure.add(ItemsDataStructure(
+            recyclerViewItemsDataStructure.add(RecyclerViewItemsDataStructure(
                 currencyName,
                 currencyRate
             ))
         }
 
-        itemsCurrencyData
-            .postValue(itemsDataStructure)
+        recyclerViewItemsCurrencyData
+            .postValue(recyclerViewItemsDataStructure)
     }
 
     /**
@@ -52,21 +52,21 @@ class CurrencyDataViewModel : ViewModel() {
     @ExperimentalCoroutinesApi
     fun updateDataFromRetrofitResult(baseCurrency: String, itemsData: Map<String, Double>) =  CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
         Log.d("ItemDataStructure Update Retrofit", "Adding To ArrayList")
-        itemsRatesStructure.clear()
+        recyclerViewItemsRatesStructure.clear()
 
-        itemsRatesStructure.add(ItemsDataStructure(
+        recyclerViewItemsRatesStructure.add(RecyclerViewItemsDataStructure(
             baseCurrency,
             1.0
         ))
 
         itemsData.forEach { (currencyName, currencyRate) ->
-            itemsRatesStructure.add(ItemsDataStructure(
+            recyclerViewItemsRatesStructure.add(RecyclerViewItemsDataStructure(
                 currencyName,
                 currencyRate
             ))
         }
 
-        itemsCurrencyRate
-            .postValue(itemsRatesStructure)
+        recyclerViewItemsCurrencyRate
+            .postValue(recyclerViewItemsRatesStructure)
     }
 }

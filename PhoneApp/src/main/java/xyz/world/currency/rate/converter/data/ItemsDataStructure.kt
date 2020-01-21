@@ -1,24 +1,18 @@
 package xyz.world.currency.rate.converter.data
 
-class ItemsDataStructure {
-
-    var countryName: String? = null
-
-    var currencyCode: String? = null
-    var currencyRate: Double? = 1.0
-
-    /**
-     *  ItemsDataStructure for Public API Call.
-     *  Country Name will download from Public Firestore Database Currency/Public/Rates/{CurrencyName}/CountryName
-     */
-    constructor(CurrencyCode: String?, Rate: Double?) {
-        this.currencyCode= CurrencyCode
-
-        this.currencyRate = Rate
-    }
-}
+/**
+ *  ItemsDataStructure for Public API Call.
+ *  Country Name will download from Public Firestore Database Currency/Public/Rates/{CurrencyName}/CountryName
+ */
+data class RecyclerViewItemsDataStructure (var currencyCode: String, var currencyRate: Double)
 
 /**
- * Data Class to Parse JSON Objects from Revolut.Duckdns.org
- */
-data class ItemsDataStructureJsonResultResult(val base: String, val date: String, val rates: Map<String, Double>)
+ * Data Class to Parse JSON Objects.
+ * "success": ,
+ * "terms": ,
+ * "privacy": ,
+ * "timestamp": ,
+ * "source": ,
+ * "quotes":
+ * */
+data class DataStructureJsonResultResult(val success: Boolean, val source: String, val timestamp: Long, val quotes: Map<String, Double>)
