@@ -1,10 +1,17 @@
 package xyz.world.currency.rate.converter.data.download
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import retrofit2.Retrofit
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
+import retrofit2.converter.gson.GsonConverterFactory
+import xyz.learn.world.heritage.SavedData.PreferencesHandler
 import xyz.world.currency.rate.converter.data.CurrencyDataViewModel
+import xyz.world.currency.rate.converter.data.EndpointInterface
 import xyz.world.currency.rate.converter.utils.checkpoints.SystemCheckpoints
 import java.util.concurrent.TimeUnit
 
@@ -53,6 +60,54 @@ class UpdateCloudData {
             }
             .observeOn(Schedulers.io())
             .subscribe()
+    }
+
+    /**
+     *  Download JSON Data from a Public API call on device.
+     *  & Parse data on device.
+     *  Process will trigger each second
+     */
+    @ExperimentalCoroutinesApi
+    @SuppressLint("CheckResult")
+    fun triggerRatesUpdate(context: Context, currencyDataViewModel: CurrencyDataViewModel) {
+        currentBaseCurrency = currencyDataViewModel.baseCurrency.value
+
+        val flowableItemsDataStructure = endpointInterface()
+            .downloadRatesData(if (currencyDataViewModel.baseCurrency.value == null) { PreferencesHandler(context).CurrencyPreferences().readSaveCurrency() } else { currencyDataViewModel.baseCurrency.value!! })
+            .doOnSubscribe {}
+            .delay(1, TimeUnit.SECONDS)
+            .subscribeOn(Schedulers.io())
+            .observeOn(Schedulers.io())
+            .repeatUntil {
+                currentBaseCurrency != currencyDataViewModel.baseCurrency.value
+            }
+            .filter {
+                Log.d("Base Filter", "${CONTINUE_UPDATE_SUBSCRIPTION}")
+
+                SystemCheckpoints(context).networkConnection() && CONTINUE_UPDATE_SUBSCRIPTION
+            }
+        flowableItemsDataStructure.subscribe({
+            Log.d("Update Base Currency", it.source)
+
+            currencyDataViewModel
+                .updateDataFromRetrofitResult(it.source, it.quotes)
+
+        }, {
+            Log.d("Retrofit Error", "${it.message}")
+        })
+    }
+
+    /**
+     *  Initializing Retrofit & Json Parser
+     */
+    private fun endpointInterface(): EndpointInterface {
+
+        return Retrofit.Builder()
+            .baseUrl(EndpointInterface.BASE_Link)
+            .addConverterFactory(GsonConverterFactory.create())
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .build()
+            .create(EndpointInterface::class.java)
     }
 }
 

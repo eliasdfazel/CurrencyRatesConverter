@@ -1,2 +1,2 @@
 include ':PhoneApp', ':LibraryJSON'
-rootProject.name='Currenty Rate & Converter'
+rootProject.name='Currency Rates & Converter PayPay'
