@@ -50,16 +50,6 @@ class EntryConfigurations : FragmentActivity() {
             window.navigationBarColor = Color.BLACK
         }
 
-        toolbarOption.setOnClickListener {
-            if (systemCheckpoints.networkConnection()) {
-
-                //call update list process
-
-            } else {
-                toolbarOption.setImageDrawable(getDrawable(R.drawable.no_internet))
-            }
-        }
-
         window.statusBarColor = getColor(R.color.colorPrimaryDark)
         window.navigationBarColor = getColor(R.color.colorPrimaryDark)
 

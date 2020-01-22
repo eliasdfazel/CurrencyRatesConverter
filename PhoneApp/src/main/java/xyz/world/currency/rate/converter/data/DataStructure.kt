@@ -4,7 +4,7 @@ class RoomDatabaseColumn {
 
     companion object {
         const val CurrencyCode = "CurrencyCode"
-        const val FullCurrencyName = "CurrencyCode"
+        const val CountryName = "CountryName"
         const val CurrencyRate = "CurrencyRate"
         const val LastUpdateTime = "LastUpdateTime"
     }
@@ -36,4 +36,4 @@ class JsonDataStructure {
     }
 }
 
-data class DataStructureJsonResultResult(val success: Boolean, val source: String, val timestamp: Long, val quotes: Map<String, Double>)
+data class SupportedListJsonResultResult(val success: Boolean, val currencies: Map<String, Double>)

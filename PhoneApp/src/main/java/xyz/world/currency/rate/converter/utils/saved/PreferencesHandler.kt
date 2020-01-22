@@ -26,5 +26,15 @@ internal class PreferencesHandler(var context: Context) {
             return sharedPreferences.getString("LastCurrency", "USD")!!
         }
 
+        fun saveLastUpdate(valueToSave: Long) {
+            with (sharedPreferences.edit()) {
+                this?.putLong("LastUpdate", (valueToSave * 1000))
+                this?.commit()
+            }
+        }
+
+        fun readLastUpdate() : Long {
+            return sharedPreferences.getLong("LastUpdate", 0)
+        }
     }
 }

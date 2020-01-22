@@ -8,6 +8,6 @@ class DatabasePath {
 
         val CREATE_DATABASE_TABLE_COMMAND = ("CREATE TABLE IF NOT EXISTS "
                 + DatabasePath.CURRENCY_DATABASE_NAME +
-                "(" + "CurrencyCode" + " TEXT PRIMARY KEY, FullCurrencyName TEXT, CurrencyRate REAL, LastUpdateTime TEXT)")
+                "(" + "CurrencyCode" + " TEXT PRIMARY KEY, CountryName TEXT, CurrencyRate REAL, LastUpdateTime TEXT)")
     }
 }

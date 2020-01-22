@@ -3,17 +3,78 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:apps="http://schemas.android.com/tools"
     android:id="@+id/mainView">
+
+    <com.google.android.material.textfield.TextInputLayout xmlns:apps="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/textInputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="57dp"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="13dp"
+        android:gravity="center|start"
+        android:imeOptions="actionDone"
+        android:hint="@string/currencyRateAmount"
+        android:textColorHint="@color/colorAccent"
+
+        apps:boxBackgroundMode="outline"
+        apps:boxBackgroundColor="@android:color/transparent"
+        apps:boxCornerRadiusTopStart="51dp"
+        apps:boxCornerRadiusTopEnd="51dp"
+        apps:boxCornerRadiusBottomStart="51dp"
+        apps:boxCornerRadiusBottomEnd="51dp"
+        apps:boxStrokeColor="@color/colorAccent"
+        apps:boxStrokeWidth="2dp"
+        apps:boxStrokeWidthFocused="2dp"
+        apps:hintTextColor="@color/colorAccent"
+        apps:errorEnabled="true"
+        apps:errorTextColor="@color/vividColor"
+
+        apps:layout_constraintBottom_toBottomOf="parent"
+        apps:layout_constraintStart_toStartOf="parent"
+        apps:layout_constraintEnd_toEndOf="parent">
+
+        <androidx.appcompat.widget.AppCompatAutoCompleteTextView xmlns:apps="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/typeRate"
+            android:layout_width="match_parent"
+            android:layout_height="51dp"
+            android:paddingStart="13dp"
+            android:paddingEnd="13dp"
+            android:gravity="center|start"
+            android:imeOptions="actionDone"
+            android:lines="1"
+            android:inputType="number"
+            android:maxLines="1"
+            android:textSize="17sp"
+            android:textColor="@color/colorPrimaryDark"
+            android:cursorVisible="true" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <ImageView
+        android:id="@+id/currentCurrencyFlag"
+        android:layout_width="51dp"
+        android:layout_height="51dp"
+        android:layout_marginEnd="9dp"
+        android:layout_marginTop="1dp"
+        android:layout_marginBottom="1dp"
+        android:padding="5dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/currency_symbols_icon"
+        app:layout_constraintBottom_toBottomOf="@id/textInputLayout"
+        app:layout_constraintEnd_toEndOf="@id/textInputLayout"/>
 
     <ScrollView
         android:id="@+id/nestedScrollView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:requiresFadingEdge="vertical"
         android:fadingEdge="vertical"
         android:fadingEdgeLength="2dp"
         android:scrollbars="vertical"
-        android:smoothScrollbar="true">
+        android:smoothScrollbar="true"
+
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/textInputLayout">
 
         <RelativeLayout
             android:id="@+id/scrollRelativeLayout"

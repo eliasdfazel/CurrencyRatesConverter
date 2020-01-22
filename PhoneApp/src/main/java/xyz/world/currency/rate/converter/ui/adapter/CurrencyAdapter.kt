@@ -1,20 +1,17 @@
 package xyz.world.currency.rate.converter.ui.adapter
 
 import android.content.Context
-import android.graphics.drawable.Drawable
 import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
 import com.google.firebase.firestore.FirebaseFirestore
 import xyz.learn.world.heritage.SavedData.PreferencesHandler
 import xyz.world.currency.rate.converter.R
+import xyz.world.currency.rate.converter.data.CurrencyDataViewModel
 import xyz.world.currency.rate.converter.data.RecyclerViewItemsDataStructure
 import xyz.world.currency.rate.converter.data.database.DatabasePath
 import xyz.world.currency.rate.converter.data.download.UpdateCloudData
@@ -28,7 +25,6 @@ class CurrencyAdapter(var context: Context) : RecyclerView.Adapter<ItemViewHolde
     var recyclerView: RecyclerView? = null
 
     var recyclerViewItemsDataStructure: ArrayList<RecyclerViewItemsDataStructure> = ArrayList<RecyclerViewItemsDataStructure>()
-    var recyclerViewItemsDataStructurePayload: ArrayList<RecyclerViewItemsDataStructure> = ArrayList<RecyclerViewItemsDataStructure>()
 
     var updateFirstRowPayload: Boolean = false
     var multiplyNumber: Double = 1.0
@@ -57,16 +53,18 @@ class CurrencyAdapter(var context: Context) : RecyclerView.Adapter<ItemViewHolde
 
     override fun onBindViewHolder(itemViewHolder: ItemViewHolder, position: Int, payloads: MutableList<Any>) {
         if (payloads.isNotEmpty()) {
-            Log.d("PayLoads Update", "${recyclerViewItemsDataStructurePayload[position].currencyCode} ::: ${recyclerViewItemsDataStructurePayload[position].currencyRate}")
+            Log.d("PayLoads Update", "${recyclerViewItemsDataStructure[position].currencyCode} ::: ${recyclerViewItemsDataStructure[position].currencyRate}")
 
-            itemViewHolder.currencyRate.text = (recyclerViewItemsDataStructurePayload[position].currencyRate?.times(multiplyNumber)!!.formatToThreeDigitAfterPoint())
-            itemViewHolder.currencyName.text = recyclerViewItemsDataStructurePayload[position].currencyCode
-            firestore.document(DatabasePath.FIRESTORE_REFERENCE_DIRECTORY + recyclerViewItemsDataStructurePayload[position].currencyCode).get().addOnSuccessListener {
-                itemViewHolder.currencyCountry.text = it.getString("CountryName")
+            itemViewHolder.currencyRate.text = (recyclerViewItemsDataStructure[position].currencyRate.times(multiplyNumber).formatToThreeDigitAfterPoint())
+            itemViewHolder.currencyName.text = recyclerViewItemsDataStructure[position].currencyCode
+            firestore.document(DatabasePath.FIRESTORE_REFERENCE_DIRECTORY + recyclerViewItemsDataStructure[position].currencyCode).get().addOnSuccessListener {
+                val countryName = it.getString("CountryName")
+
+                itemViewHolder.currencyCountry.text = if (countryName.isNullOrEmpty()) { context.getString(R.string.threeDot) } else { countryName }
             }
 
             Glide.with(context)
-                .load(CountryData().flagCountryLink(recyclerViewItemsDataStructurePayload[position].currencyCode!!.toLowerCase()))
+                .load(CountryData().flagCountryLink(recyclerViewItemsDataStructure[position].currencyCode.toLowerCase()))
                 .diskCacheStrategy(DiskCacheStrategy.DATA)
                 .into(itemViewHolder.countryFlag)
         } else {
@@ -77,20 +75,17 @@ class CurrencyAdapter(var context: Context) : RecyclerView.Adapter<ItemViewHolde
     override fun onBindViewHolder(itemViewHolder: ItemViewHolder, position: Int) {
         Log.d("Full Update", "${recyclerViewItemsDataStructure[position].currencyCode} ::: ${recyclerViewItemsDataStructure[position].currencyRate}")
 
-        itemViewHolder.currencyRate.text = ((recyclerViewItemsDataStructure[position].currencyRate!!.times(multiplyNumber)).formatToThreeDigitAfterPoint())
+        itemViewHolder.currencyRate.text = ((recyclerViewItemsDataStructure[position].currencyRate.times(multiplyNumber)).formatToThreeDigitAfterPoint())
         itemViewHolder.currencyName.text = recyclerViewItemsDataStructure[position].currencyCode
         firestore.document(DatabasePath.FIRESTORE_REFERENCE_DIRECTORY + recyclerViewItemsDataStructure[position].currencyCode).get().addOnSuccessListener {
-            itemViewHolder.currencyCountry.text = it.getString("CountryName")
+            val countryName = it.getString("CountryName")
+
+            itemViewHolder.currencyCountry.text = if (countryName.isNullOrEmpty()) { context.getString(R.string.threeDot) } else { countryName }
         }
 
         Glide.with(context)
-            .load(CountryData().flagCountryLink(recyclerViewItemsDataStructure[position].currencyCode!!.toLowerCase()))
+            .load(CountryData().flagCountryLink(recyclerViewItemsDataStructure[position].currencyCode.toLowerCase()))
             .diskCacheStrategy(DiskCacheStrategy.DATA)
-            .listener(object : RequestListener<Drawable> {
-                override fun onLoadFailed(glideException: GlideException?, any: Any?, target: com.bumptech.glide.request.target.Target<Drawable>?, boolean: Boolean): Boolean { return false }
-
-                override fun onResourceReady(drawable: Drawable?, any: Any?, target: com.bumptech.glide.request.target.Target<Drawable>?, dataSource: DataSource?, boolean: Boolean): Boolean { return false }
-            })
             .into(itemViewHolder.countryFlag)
 
         itemViewHolder.mainView.setOnClickListener {
@@ -98,18 +93,10 @@ class CurrencyAdapter(var context: Context) : RecyclerView.Adapter<ItemViewHolde
             UpdateCloudData.CONTINUE_UPDATE_SUBSCRIPTION = false
 
             PreferencesHandler(context).CurrencyPreferences().saveLastCurrency(itemViewHolder.currencyName.text.toString())
+            CurrencyDataViewModel.baseCurrency.postValue(itemViewHolder.currencyName.text.toString())
 
             multiplyNumber = itemViewHolder.currencyRate.text.toString().toDouble()
             Log.d("Base Rate Multiplier", "${multiplyNumber}")
-
-            Handler().postDelayed({
-                recyclerView?.smoothScrollToPosition(0)
-            }, 200)
-
-            notifyItemMoved(itemViewHolder.adapterPosition, 0)
-            updateFirstRowPayload = true
-
-            itemViewHolder.currencyRate.requestFocus()
 
             //Change [CONTINUE_UPDATE_SUBSCRIPTION] to allow flow continue.
             Handler().postDelayed({

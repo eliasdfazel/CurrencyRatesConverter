@@ -4,8 +4,8 @@
     <color name="colorPrimaryDark">#333333</color>
     <color name="colorAccent">#01a0c7</color>
 
-    <color name="signInRipple">#E91E63</color>
-    <color name="rippleColor">#6D01A0C7</color>
+    <color name="vividColor">#E91E63</color>
+    <color name="darkAccentColor">#6D01A0C7</color>
 
     <color name="splashColor">#FFFFFF</color>
     <color name="mainColor">#FFFFFF</color>

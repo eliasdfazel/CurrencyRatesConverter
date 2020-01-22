@@ -2,12 +2,11 @@
 
     <string name="app_name">Currency Rates &amp; Converter</string>
 
-    <string name="signIn">Quick Sign In</string>
-    <string name="signingIn">Signing In…</string>
-    <string name="skipSignIn">Skip For Now</string>
+    <string name="selectedCurrency">You Changed The Currency: </string>
+    <string name="updatingForce">Currency Rates Are Updating…</string>
 
-    <string name="informSignIn">App Will Automatically Switch To Your Account</string>
-    <string name="moreAccountOption">More Personalization Coming Soon…</string>
+    <string name="currencyRateAmount">Type Currency Amount To Convert</string>
+    <string name="inputError">Invalid Amount</string>
 
     <string name="contentDescription_NoInternet">No Internet Connection</string>
 </resources>

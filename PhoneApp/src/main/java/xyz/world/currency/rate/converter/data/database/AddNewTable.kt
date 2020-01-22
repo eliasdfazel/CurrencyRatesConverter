@@ -23,7 +23,7 @@ class AddNewTable {
 
             false
         } finally {
-          //  roomDatabase.close()
+            roomDatabase.close()
         }
     }
 }

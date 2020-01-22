@@ -1,3 +1,5 @@
 <resources>
 
+    <string name="threeDot" translatable="false">…</string>
+
 </resources>
