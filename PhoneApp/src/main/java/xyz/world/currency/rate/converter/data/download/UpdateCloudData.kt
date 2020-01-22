@@ -74,7 +74,6 @@ class UpdateCloudData (var systemCheckpoints: SystemCheckpoints) {
                     val lastTimeUpdate = currencyPreferences.readLastUpdate()
                     val timeDiffer = (System.currentTimeMillis() - lastTimeUpdate)
                     val thirtyMinutesMillis = (30*60*1000)
-
                     if (timeDiffer > thirtyMinutesMillis) {
                         Log.d("UpdateCloudData", "Updating Database After 30 Minutes")
 
@@ -110,8 +109,9 @@ class UpdateCloudData (var systemCheckpoints: SystemCheckpoints) {
                 if (response != null) {
                     try {
                         val baseCurrency: String = response.getString(JsonDataStructure.SOURCE)
-                        val updateTimestamp: Long = response.getLong(JsonDataStructure.TIMESTAMP)
                         val currencyRates = response.getJSONObject(JsonDataStructure.QUOTES)
+
+                        val updateTimestamp: Long = System.currentTimeMillis()
                         PreferencesHandler(context).CurrencyPreferences().saveLastUpdate(updateTimestamp)
 
                         GlobalScope.launch {

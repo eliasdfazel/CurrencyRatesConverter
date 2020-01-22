@@ -18,8 +18,6 @@ class ReadDatabase(var context: Context) {
     fun readAllData(tableName: String, currencyDataViewModel: CurrencyDataViewModel) = CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
         val recyclerViewItemsDataStructure: ArrayList<RecyclerViewItemsDataStructure> = ArrayList<RecyclerViewItemsDataStructure>()
 
-        println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> READ DATA")
-
         val roomDatabaseRead = Room.databaseBuilder(context, CurrencyDataInterface::class.java, DatabasePath.CURRENCY_DATABASE_NAME)
             .build()
 

@@ -2,6 +2,8 @@ package xyz.world.currency.rate.converter.ui
 
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -166,13 +168,59 @@ class CurrencyList : Fragment() {
                         currencyAdapter?.multiplyNumber = multiplier
                         currencyAdapter?.notifyItemRangeChanged(0, currencyAdapter!!.itemCount, multiplier)
                     } else {
-                        textInputLayout.error = getString(R.string.inputError)
-                        textInputLayout.errorIconDrawable = context!!.getDrawable(android.R.drawable.stat_notify_error)
+                        if (textView.text.toString() == "0") {
+                            textInputLayout.isErrorEnabled = false
+
+                            val multiplier = textView?.text.toString().toDouble()
+                            currencyAdapter?.multiplyNumber = multiplier
+                            currencyAdapter?.notifyItemRangeChanged(0, currencyAdapter!!.itemCount, multiplier)
+                        } else {
+                            textInputLayout.isErrorEnabled = true
+
+                            textInputLayout.error = getString(R.string.inputError)
+                            textInputLayout.errorIconDrawable = context!!.getDrawable(android.R.drawable.stat_notify_error)
+                        }
                     }
                 }
             }
 
             false
         }
+
+        typeRate.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(afterChangedText: Editable?) {
+                if (afterChangedText.isNullOrEmpty()) {
+                    //Preventing invalid input
+                    textInputLayout.isErrorEnabled = true
+
+                    textInputLayout.error = getString(R.string.inputError)
+                    textInputLayout.errorIconDrawable = context!!.getDrawable(android.R.drawable.stat_notify_error)
+                } else {
+                    if (typeRate.text.toString() == "0") {
+                        //Preventing invalid input
+                        textInputLayout.isErrorEnabled = true
+
+                        textInputLayout.error = getString(R.string.inputError)
+                        textInputLayout.errorIconDrawable = context!!.getDrawable(android.R.drawable.stat_notify_error)
+                    } else {
+                        textInputLayout.isErrorEnabled = false
+
+                        val multiplier = typeRate.text.toString().toDouble()
+                        currencyAdapter?.multiplyNumber = multiplier
+                        currencyAdapter?.notifyItemRangeChanged(0, currencyAdapter!!.itemCount, multiplier)
+                    }
+                }
+
+            }
+
+            override fun beforeTextChanged(charSequence: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(charSequence: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+        })
     }
 }
