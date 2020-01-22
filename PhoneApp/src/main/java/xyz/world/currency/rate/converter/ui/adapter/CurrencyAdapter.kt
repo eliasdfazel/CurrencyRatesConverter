@@ -16,8 +16,8 @@ import com.google.firebase.firestore.FirebaseFirestore
 import xyz.learn.world.heritage.SavedData.PreferencesHandler
 import xyz.world.currency.rate.converter.R
 import xyz.world.currency.rate.converter.data.RecyclerViewItemsDataStructure
+import xyz.world.currency.rate.converter.data.database.DatabasePath
 import xyz.world.currency.rate.converter.data.download.UpdateCloudData
-import xyz.world.currency.rate.converter.data.room.DatabasePath
 import xyz.world.currency.rate.converter.utils.extensions.formatToThreeDigitAfterPoint
 import xyz.world.currency.rate.converter.utils.saved.CountryData
 

@@ -1,4 +1,4 @@
-package xyz.world.currency.rate.converter.data.room
+package xyz.world.currency.rate.converter.data.database
 
 class DatabasePath {
 

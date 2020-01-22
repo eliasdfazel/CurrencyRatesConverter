@@ -1,4 +1,4 @@
-package xyz.world.currency.rate.converter.data.room
+package xyz.world.currency.rate.converter.data.database
 
 import android.database.sqlite.SQLiteException
 import androidx.room.RoomDatabase

@@ -1,6 +1,5 @@
 package xyz.world.currency.rate.converter.ui
 
-import android.database.Cursor
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,15 +9,12 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
-import androidx.room.Room
-import androidx.sqlite.db.SupportSQLiteDatabase
 import kotlinx.android.synthetic.main.currency_list_view.*
 import kotlinx.android.synthetic.main.entry_configurations.*
-import net.geekstools.floatshort.PRO.Widget.RoomDatabase.CurrencyDataInterface
 import xyz.world.currency.rate.converter.R
 import xyz.world.currency.rate.converter.data.CurrencyDataViewModel
 import xyz.world.currency.rate.converter.data.RecyclerViewItemsDataStructure
-import xyz.world.currency.rate.converter.data.room.DatabasePath
+import xyz.world.currency.rate.converter.data.database.ReadDatabase
 import xyz.world.currency.rate.converter.ui.adapter.CurrencyAdapter
 import xyz.world.currency.rate.converter.ui.adapter.CustomLinearLayoutManager
 import xyz.world.currency.rate.converter.utils.checkpoints.NetworkConnectionListener
@@ -32,54 +28,7 @@ class CurrencyList : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
-        Thread {
-
-
-            //BOOOOOOM
-    //            val roomDatabase = Room.databaseBuilder(context!!, CurrencyDataInterface::class.java, DatabasePath.CURRENCY_DATABASE_NAME)
-    //                .allowMainThreadQueries()
-    //                .build()
-    //            AddNewTable().addNewTableForNewBaseCurrency(roomDatabase, "EUR")
-    //
-    //            val supportSQLiteDatabaseWrite: SupportSQLiteDatabase = roomDatabase.openHelper.writableDatabase
-    //
-    //            supportSQLiteDatabaseWrite.insert("EUR", SQLiteDatabase.CONFLICT_IGNORE, ContentValues().apply {
-    //                this.put("CurrencyCode", "USD")
-    //                this.put("FullCurrencyName", "America Dollar")
-    //                this.put("CurrencyRate", 1.16)
-    //                this.put("LastUpdateTime", 123.321)
-    //            })
-    //
-    //            supportSQLiteDatabaseWrite.insert("EUR", SQLiteDatabase.CONFLICT_IGNORE, ContentValues().apply {
-    //                this.put("CurrencyCode", "CAD")
-    //                this.put("FullCurrencyName", "Canadian Dollar")
-    //                this.put("CurrencyRate", 1.45)
-    //                this.put("LastUpdateTime", 123.321)
-    //            })
-
-
-            val roomDatabaseRead = Room.databaseBuilder(context!!, CurrencyDataInterface::class.java, DatabasePath.CURRENCY_DATABASE_NAME)
-                .allowMainThreadQueries()
-                .build()
-
-            val supportSQLiteDatabase: SupportSQLiteDatabase = roomDatabaseRead.openHelper.readableDatabase
-            val cursor: Cursor = supportSQLiteDatabase.query("SELECT * FROM EUR")
-            cursor.moveToFirst()
-
-            while (!cursor.isAfterLast) {
-
-                println(">>>  ${cursor.getString(cursor.getColumnIndex("CurrencyCode"))} - ${cursor.getString(cursor.getColumnIndex("FullCurrencyName"))} " +
-                        "- ${cursor.getDouble(cursor.getColumnIndex("CurrencyRate"))}")
-                cursor.moveToNext()
-            }
-
-            roomDatabaseRead.close()
-
-
-        }.start()
-
-
+        ReadDatabase(context!!).readAllData("EUR")
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

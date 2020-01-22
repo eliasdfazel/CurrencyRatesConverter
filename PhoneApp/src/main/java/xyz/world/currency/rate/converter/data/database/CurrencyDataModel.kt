@@ -4,7 +4,7 @@ import androidx.annotation.NonNull
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import xyz.world.currency.rate.converter.data.room.DatabasePath
+import xyz.world.currency.rate.converter.data.database.DatabasePath
 
 @Entity(tableName = DatabasePath.CURRENCY_DATABASE_NAME)
 data class CurrencyDataModel(
@@ -13,5 +13,4 @@ data class CurrencyDataModel(
         @NonNull @ColumnInfo(name = "FullCurrencyName") var FullCurrencyName: String,
 
         @NonNull @ColumnInfo(name = "CurrencyRate") var CurrencyRate: Double,
-        @ColumnInfo(name = "LastUpdateTime") var LastUpdateTime: String?
-)
+        @ColumnInfo(name = "LastUpdateTime") var LastUpdateTime: String?)

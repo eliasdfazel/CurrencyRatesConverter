@@ -1,5 +1,15 @@
 package xyz.world.currency.rate.converter.data
 
+class RoomDatabaseColumn {
+
+    companion object {
+        const val CurrencyCode = "CurrencyCode"
+        const val FullCurrencyName = "CurrencyCode"
+        const val CurrencyRate = "CurrencyRate"
+        const val LastUpdateTime = "LastUpdateTime"
+    }
+}
+
 /**
  *  ItemsDataStructure for Public API Call.
  *  Country Name will download from Public Firestore Database Currency/Public/Rates/{CurrencyName}/CountryName
