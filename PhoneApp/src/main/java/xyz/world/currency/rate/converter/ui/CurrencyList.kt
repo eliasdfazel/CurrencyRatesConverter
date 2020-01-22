@@ -14,7 +14,6 @@ import kotlinx.android.synthetic.main.entry_configurations.*
 import xyz.world.currency.rate.converter.R
 import xyz.world.currency.rate.converter.data.CurrencyDataViewModel
 import xyz.world.currency.rate.converter.data.RecyclerViewItemsDataStructure
-import xyz.world.currency.rate.converter.data.database.ReadDatabase
 import xyz.world.currency.rate.converter.ui.adapter.CurrencyAdapter
 import xyz.world.currency.rate.converter.ui.adapter.CustomLinearLayoutManager
 import xyz.world.currency.rate.converter.utils.checkpoints.NetworkConnectionListener
@@ -27,8 +26,6 @@ class CurrencyList : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        ReadDatabase(context!!).readAllData("EUR")
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

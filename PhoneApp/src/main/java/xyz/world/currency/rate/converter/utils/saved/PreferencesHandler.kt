@@ -23,7 +23,7 @@ internal class PreferencesHandler(var context: Context) {
          * Get selected currency code by user.
          */
         fun readSaveCurrency() : String {
-            return sharedPreferences.getString("LastCurrency", "EUR")!!
+            return sharedPreferences.getString("LastCurrency", "USD")!!
         }
 
     }

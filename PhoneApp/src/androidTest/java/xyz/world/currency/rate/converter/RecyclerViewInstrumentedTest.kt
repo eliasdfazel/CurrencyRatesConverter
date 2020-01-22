@@ -38,7 +38,6 @@ class RecyclerViewInstrumentedTest {
 
     @Test
     fun scrollOnRecyclerViewItem_ItemView() {
-
         val uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
         uiDevice.wait(Until.hasObject(By.scrollable(true)), 5000)
         uiDevice.performActionAndWait({

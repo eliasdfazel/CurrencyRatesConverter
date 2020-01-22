@@ -9,7 +9,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
-import xyz.learn.world.heritage.SavedData.PreferencesHandler
 import xyz.world.currency.rate.converter.data.CurrencyDataViewModel
 import xyz.world.currency.rate.converter.data.EndpointInterface
 import xyz.world.currency.rate.converter.utils.checkpoints.SystemCheckpoints
@@ -73,9 +72,9 @@ class UpdateCloudData {
         currentBaseCurrency = currencyDataViewModel.baseCurrency.value
 
         val flowableItemsDataStructure = endpointInterface()
-            .downloadRatesData(if (currencyDataViewModel.baseCurrency.value == null) { PreferencesHandler(context).CurrencyPreferences().readSaveCurrency() } else { currencyDataViewModel.baseCurrency.value!! })
+            .downloadRatesData("USD"/*if (currencyDataViewModel.baseCurrency.value == null) { PreferencesHandler(context).CurrencyPreferences().readSaveCurrency() } else { currencyDataViewModel.baseCurrency.value!! }*/)
             .doOnSubscribe {}
-            .delay(1, TimeUnit.SECONDS)
+            .delay(30, TimeUnit.MINUTES)
             .subscribeOn(Schedulers.io())
             .observeOn(Schedulers.io())
             .repeatUntil {
@@ -88,6 +87,8 @@ class UpdateCloudData {
             }
         flowableItemsDataStructure.subscribe({
             Log.d("Update Base Currency", it.source)
+
+            println(">>> >>> >>> ${it}")
 
             currencyDataViewModel
                 .updateDataFromRetrofitResult(it.source, it.quotes)
