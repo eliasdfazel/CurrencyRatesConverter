@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -25,12 +24,11 @@ class UpdateSupportedListData (var systemCheckpoints: SystemCheckpoints) {
      *  & Parse data on device.
      *  Process will trigger each second
      */
-    @ExperimentalCoroutinesApi
     @SuppressLint("CheckResult")
-    fun triggerRatesUpdate(context: Context, currencyDataViewModel: CurrencyDataViewModel) {
+    fun triggerSupportedCurrenciesUpdate(context: Context, currencyDataViewModel: CurrencyDataViewModel) {
 
         val flowableItemsDataStructure = endpointInterfaceRetrofit()
-            .downloadRatesData(
+            .getListOfSupportCurrencies(
                 if (CurrencyDataViewModel.baseCurrency.value == null) { PreferencesHandler(context).CurrencyPreferences().readSaveCurrency() }
                 else { CurrencyDataViewModel.baseCurrency.value!! }
             )
@@ -48,7 +46,7 @@ class UpdateSupportedListData (var systemCheckpoints: SystemCheckpoints) {
 
 
 
-
+            //Save To Base Table in Room Database
 
 
 
@@ -70,39 +68,3 @@ class UpdateSupportedListData (var systemCheckpoints: SystemCheckpoints) {
             .create(EndpointInterface::class.java)
     }
 }
-
-/*WidgetDataModel widgetDataModel = new WidgetDataModel(
-                                    System.currentTimeMillis(),
-                                    appWidgetId,
-                                    InstalledWidgetsAdapter.pickedWidgetPackageName,
-                                    InstalledWidgetsAdapter.pickedWidgetClassNameProvider,
-                                    InstalledWidgetsAdapter.pickedWidgetConfigClassName,
-                                    functionsClass.appName(InstalledWidgetsAdapter.pickedWidgetPackageName),
-                                    InstalledWidgetsAdapter.pickedWidgetLabel,
-                                    false
-                            );
-
-                            WidgetDataInterface widgetDataInterface = Room.databaseBuilder(getApplicationContext(), WidgetDataInterface.class, PublicVariable.WIDGET_DATA_DATABASE_NAME)
-                                    .fallbackToDestructiveMigration()
-                                    .addCallback(new RoomDatabase.Callback() {
-                                        @Override
-                                        public void onCreate(@NonNull SupportSQLiteDatabase supportSQLiteDatabase) {
-                                            super.onCreate(supportSQLiteDatabase);
-                                        }
-
-                                        @Override
-                                        public void onOpen(@NonNull SupportSQLiteDatabase supportSQLiteDatabase) {
-                                            super.onOpen(supportSQLiteDatabase);
-
-                                            runOnUiThread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    LoadConfiguredWidgets loadConfiguredWidgets = new LoadConfiguredWidgets();
-                                                    loadConfiguredWidgets.execute();
-                                                }
-                                            });
-                                        }
-                                    })
-                                    .build();
-                            widgetDataInterface.initDataAccessObject().insertNewWidgetData(widgetDataModel);
-                            widgetDataInterface.close();*/

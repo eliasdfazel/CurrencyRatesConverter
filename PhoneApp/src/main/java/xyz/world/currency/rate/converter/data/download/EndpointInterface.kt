@@ -16,5 +16,5 @@ interface EndpointInterface {
      * with suffix parameter of Base Currency.
      */
     @GET("list?access_key=${EndpointInterface.API_KEY}")
-    fun downloadRatesData(@Query("currencies") base: String): Single<SupportedListJsonResultResult>
+    fun getListOfSupportCurrencies(@Query("currencies") base: String): Single<SupportedListJsonResultResult>
 }
