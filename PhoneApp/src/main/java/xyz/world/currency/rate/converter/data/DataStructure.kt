@@ -25,4 +25,15 @@ data class RecyclerViewItemsDataStructure (var currencyCode: String, var currenc
  * "source": ,
  * "quotes":
  * */
+
+class JsonDataStructure {
+
+    companion object {
+        const val SUCCESS = "success"
+        const val SOURCE = "source"
+        const val TIMESTAMP = "timestamp"
+        const val QUOTES = "quotes"
+    }
+}
+
 data class DataStructureJsonResultResult(val success: Boolean, val source: String, val timestamp: Long, val quotes: Map<String, Double>)

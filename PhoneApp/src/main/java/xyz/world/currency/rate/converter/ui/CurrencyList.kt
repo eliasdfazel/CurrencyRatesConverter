@@ -14,6 +14,7 @@ import kotlinx.android.synthetic.main.entry_configurations.*
 import xyz.world.currency.rate.converter.R
 import xyz.world.currency.rate.converter.data.CurrencyDataViewModel
 import xyz.world.currency.rate.converter.data.RecyclerViewItemsDataStructure
+import xyz.world.currency.rate.converter.data.download.UpdateCloudData
 import xyz.world.currency.rate.converter.ui.adapter.CurrencyAdapter
 import xyz.world.currency.rate.converter.ui.adapter.CustomLinearLayoutManager
 import xyz.world.currency.rate.converter.utils.checkpoints.NetworkConnectionListener
@@ -47,6 +48,8 @@ class CurrencyList : Fragment() {
         val currencyDataViewModel: CurrencyDataViewModel = ViewModelProviders
             .of(this@CurrencyList)
             .get(CurrencyDataViewModel::class.java)
+
+        UpdateCloudData().triggerCloudDataUpdate(context!!, currencyDataViewModel)
 
         currencyDataViewModel.recyclerViewItemsCurrencyData.observe(viewLifecycleOwner,
             Observer<ArrayList<RecyclerViewItemsDataStructure>> {

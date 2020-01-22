@@ -1,2 +1,2 @@
-include ':PhoneApp', ':LibraryJSON'
+include ':PhoneApp'
 rootProject.name='Currency Rates & Converter PayPay'

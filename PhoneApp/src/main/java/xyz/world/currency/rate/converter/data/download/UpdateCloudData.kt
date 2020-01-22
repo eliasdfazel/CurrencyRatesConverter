@@ -3,21 +3,30 @@ package xyz.world.currency.rate.converter.data.download
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
+import com.android.volley.Request
+import com.android.volley.Response
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.json.JSONException
+import org.json.JSONObject
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
+import xyz.learn.world.heritage.SavedData.PreferencesHandler
 import xyz.world.currency.rate.converter.data.CurrencyDataViewModel
 import xyz.world.currency.rate.converter.data.EndpointInterface
+import xyz.world.currency.rate.converter.data.JsonDataStructure
 import xyz.world.currency.rate.converter.utils.checkpoints.SystemCheckpoints
 import java.util.concurrent.TimeUnit
+
 
 /**
  * Call for Updating Data on Server Side Or Updating Local Data from Cloud
  */
-class UpdateCloudData {
+class UpdateCloudData (systemCheckpoints: SystemCheckpoints) {
 
     companion object {
         var CONTINUE_UPDATE_SUBSCRIPTION: Boolean = true
@@ -35,12 +44,13 @@ class UpdateCloudData {
      * It will only update changed data on database, so on device listener only receive Document Snapshot when data updated.
      */
     fun triggerCloudDataUpdate(context: Context, currencyDataViewModel: CurrencyDataViewModel) {
+        println(">>>>>>>>>>>>>>>>>>>>>>>>>")
 
         Observable
             .interval(30, TimeUnit.MINUTES)
-            .repeatUntil {
-                currentBaseCurrency != currencyDataViewModel.baseCurrency.value
-            }
+//            .repeatUntil {
+//                currentBaseCurrency != currencyDataViewModel.baseCurrency.value
+//            }
             .filter {
                 Log.d("Base Filter", "$CONTINUE_UPDATE_SUBSCRIPTION")
 
@@ -53,12 +63,46 @@ class UpdateCloudData {
                 //
                 //
 
+                makeJsonObjectRequest(context)
+
                 //
                 //
                 //
             }
             .observeOn(Schedulers.io())
             .subscribe()
+    }
+
+    private fun makeJsonObjectRequest(context: Context) {
+        val jsonObjectRequest = JsonObjectRequest(
+            Request.Method.GET,
+            Endpoint().BASE_Link,
+            null,
+            Response.Listener<JSONObject?> { response ->
+                Log.d("Json Result: Currency List", response.toString())
+
+                println(">>> >>> >>> " + response)
+
+                if (response != null) {
+                    try {
+                        val baseCurrency: String = response.getString(JsonDataStructure.SOURCE)
+                        val updateTimestamp: String = response.getString(JsonDataStructure.TIMESTAMP)
+                        val currencyRates: JSONObject = response.getJSONObject(JsonDataStructure.QUOTES)
+
+
+                    } catch (e: JSONException) {
+                        e.printStackTrace()
+
+                    }
+                }
+
+            }, Response.ErrorListener {
+
+            })
+
+        val requestQueue = Volley.newRequestQueue(context)
+        requestQueue.add(jsonObjectRequest)
+
     }
 
     /**
@@ -72,7 +116,10 @@ class UpdateCloudData {
         currentBaseCurrency = currencyDataViewModel.baseCurrency.value
 
         val flowableItemsDataStructure = endpointInterface()
-            .downloadRatesData("USD"/*if (currencyDataViewModel.baseCurrency.value == null) { PreferencesHandler(context).CurrencyPreferences().readSaveCurrency() } else { currencyDataViewModel.baseCurrency.value!! }*/)
+            .downloadRatesData(
+                if (currencyDataViewModel.baseCurrency.value == null) { PreferencesHandler(context).CurrencyPreferences().readSaveCurrency() }
+                else { currencyDataViewModel.baseCurrency.value!! }
+            )
             .doOnSubscribe {}
             .delay(30, TimeUnit.MINUTES)
             .subscribeOn(Schedulers.io())
@@ -86,9 +133,7 @@ class UpdateCloudData {
                 SystemCheckpoints(context).networkConnection() && CONTINUE_UPDATE_SUBSCRIPTION
             }
         flowableItemsDataStructure.subscribe({
-            Log.d("Update Base Currency", it.source)
-
-            println(">>> >>> >>> ${it}")
+            Log.d("Json Result: Currency List", it.source)
 
             currencyDataViewModel
                 .updateDataFromRetrofitResult(it.source, it.quotes)
