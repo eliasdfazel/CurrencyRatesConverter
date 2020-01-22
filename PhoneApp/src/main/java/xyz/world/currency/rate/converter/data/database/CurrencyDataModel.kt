@@ -10,7 +10,7 @@ import xyz.world.currency.rate.converter.data.database.DatabasePath
 data class CurrencyDataModel(
         @NonNull @PrimaryKey var CurrencyCode: String,
 
-        @NonNull @ColumnInfo(name = "FullCurrencyName") var FullCurrencyName: String,
+        @NonNull @ColumnInfo(name = "CountryName") var CountryName: String,
 
         @NonNull @ColumnInfo(name = "CurrencyRate") var CurrencyRate: Double,
         @ColumnInfo(name = "LastUpdateTime") var LastUpdateTime: String?)
