@@ -63,6 +63,21 @@
         app:layout_constraintBottom_toBottomOf="@id/textInputLayout"
         app:layout_constraintEnd_toEndOf="@id/textInputLayout"/>
 
+
+    <include
+        layout="@layout/currency_list"
+
+        android:id="@+id/currenciesListInclude"
+        android:layout_width="match_parent"
+        android:layout_height="66dp"
+        android:visibility="gone"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+
     <ScrollView
         android:id="@+id/nestedScrollView"
         android:layout_width="match_parent"
