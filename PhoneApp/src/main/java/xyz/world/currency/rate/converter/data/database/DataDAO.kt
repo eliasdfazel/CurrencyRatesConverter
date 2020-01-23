@@ -2,6 +2,7 @@ package net.geekstools.floatshort.PRO.Widget.RoomDatabase
 
 import androidx.room.*
 
+
 @Dao
 interface DataDAO {
 
@@ -16,4 +17,7 @@ interface DataDAO {
 
     @Query("SELECT * FROM CurrencyRates")
     suspend fun getAllCurrencyBaseTable(): List<DatabaseDataModel>
+
+    @Query("SELECT COUNT(CurrencyCode) FROM CurrencyRates")
+    suspend fun getRowCount(): Int
 }

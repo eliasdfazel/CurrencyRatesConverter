@@ -23,8 +23,8 @@ class CurrencyDataViewModel : ViewModel() {
         MutableLiveData<ArrayList<RecyclerViewItemsDataStructure>>()
     }
 
-    val supportedCurrencyList: MutableLiveData<ArrayList<DatabaseDataModel>> by lazy {
-        MutableLiveData<ArrayList<DatabaseDataModel>>()
+    val supportedCurrencyList: MutableLiveData<List<DatabaseDataModel>> by lazy {
+        MutableLiveData<List<DatabaseDataModel>>()
     }
 
     private val recyclerViewItemsDataStructure: ArrayList<RecyclerViewItemsDataStructure> = ArrayList<RecyclerViewItemsDataStructure>()

@@ -50,7 +50,7 @@ class CurrencyList : Fragment(), View.OnClickListener, View.OnLongClickListener 
 
     var currencyAdapter: CurrencyAdapter? = null
 
-    var currenciesListData = ArrayList<DatabaseDataModel>()
+    var currenciesListData: ArrayList<DatabaseDataModel> = ArrayList<DatabaseDataModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,8 +79,8 @@ class CurrencyList : Fragment(), View.OnClickListener, View.OnLongClickListener 
             .get(CurrencyDataViewModel::class.java)
 
         currencyDataViewModel.supportedCurrencyList.observe(viewLifecycleOwner,
-            Observer<ArrayList<DatabaseDataModel>>  {
-                currenciesListData = it
+            Observer<List<DatabaseDataModel>>  {
+                currenciesListData = it as ArrayList<DatabaseDataModel>
 
                 if (currenciesListData.isNotEmpty()) {
                     setupListOfSupportedCurrencies(currenciesListData)
