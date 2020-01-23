@@ -14,7 +14,7 @@ import xyz.world.currency.rate.converter.R
 import xyz.world.currency.rate.converter.data.CurrencyDataViewModel
 import xyz.world.currency.rate.converter.data.RecyclerViewItemsDataStructure
 import xyz.world.currency.rate.converter.data.database.DatabasePath
-import xyz.world.currency.rate.converter.data.download.UpdateCloudData
+import xyz.world.currency.rate.converter.data.download.rates.UpdateCurrenciesRatesData
 import xyz.world.currency.rate.converter.utils.extensions.formatToThreeDigitAfterPoint
 import xyz.world.currency.rate.converter.utils.saved.CountryData
 
@@ -90,7 +90,7 @@ class CurrencyAdapter(var context: Context) : RecyclerView.Adapter<ItemViewHolde
 
         itemViewHolder.mainView.setOnClickListener {
             Log.d("Base Currency", itemViewHolder.currencyName.text.toString())
-            UpdateCloudData.CONTINUE_UPDATE_SUBSCRIPTION = false
+            UpdateCurrenciesRatesData.CONTINUE_UPDATE_SUBSCRIPTION = false
 
             PreferencesHandler(context).CurrencyPreferences().saveLastCurrency(itemViewHolder.currencyName.text.toString())
             CurrencyDataViewModel.baseCurrency.postValue(itemViewHolder.currencyName.text.toString())
@@ -100,7 +100,7 @@ class CurrencyAdapter(var context: Context) : RecyclerView.Adapter<ItemViewHolde
 
             //Change [CONTINUE_UPDATE_SUBSCRIPTION] to allow flow continue.
             Handler().postDelayed({
-                UpdateCloudData.CONTINUE_UPDATE_SUBSCRIPTION = true
+                UpdateCurrenciesRatesData.CONTINUE_UPDATE_SUBSCRIPTION = true
             }, 1500)
         }
     }

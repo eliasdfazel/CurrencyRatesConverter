@@ -17,7 +17,7 @@ class RoomDatabaseColumn {
 data class RecyclerViewItemsDataStructure (var currencyCode: String, var currencyRate: Double)
 
 /**
- * Data Class to Parse JSON Objects.
+ * Parse JSON Objects for Downloading Rates.
  * "success": ,
  * "terms": ,
  * "privacy": ,
@@ -25,8 +25,7 @@ data class RecyclerViewItemsDataStructure (var currencyCode: String, var currenc
  * "source": ,
  * "quotes":
  * */
-
-class JsonDataStructure {
+class RatesJsonDataStructure {
 
     companion object {
         const val SUCCESS = "success"
@@ -36,4 +35,13 @@ class JsonDataStructure {
     }
 }
 
-data class SupportedListJsonResultResult(val success: Boolean, val currencies: Map<String, Double>)
+/**
+ * Data Class to Parse JSON Objects for Supported Currencies List.
+ * "success": ,
+ * "terms": ,
+ * "privacy": ,
+ * "timestamp": ,
+ * "source": ,
+ * "quotes":
+ * */
+data class SupportedListJsonResultResult(val success: Boolean, val terms: String, val privacy: String, val currencies: HashMap<String, String>)

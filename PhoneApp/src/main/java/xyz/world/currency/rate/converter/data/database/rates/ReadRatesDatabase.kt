@@ -1,4 +1,4 @@
-package xyz.world.currency.rate.converter.data.database
+package xyz.world.currency.rate.converter.data.database.rates
 
 import android.content.Context
 import android.database.Cursor
@@ -8,17 +8,20 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import net.geekstools.floatshort.PRO.Widget.RoomDatabase.CurrencyDataInterface
+import net.geekstools.floatshort.PRO.Widget.RoomDatabase.DatabaseInterface
 import xyz.world.currency.rate.converter.data.CurrencyDataViewModel
 import xyz.world.currency.rate.converter.data.RecyclerViewItemsDataStructure
 import xyz.world.currency.rate.converter.data.RoomDatabaseColumn
+import xyz.world.currency.rate.converter.data.database.DatabasePath
 
-class ReadDatabase(var context: Context) {
+class ReadRatesDatabase(var context: Context) {
 
     fun readAllData(tableName: String, currencyDataViewModel: CurrencyDataViewModel) = CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
         val recyclerViewItemsDataStructure: ArrayList<RecyclerViewItemsDataStructure> = ArrayList<RecyclerViewItemsDataStructure>()
 
-        val roomDatabaseRead = Room.databaseBuilder(context, CurrencyDataInterface::class.java, DatabasePath.CURRENCY_DATABASE_NAME)
+        val roomDatabaseRead = Room.databaseBuilder(context, DatabaseInterface::class.java,
+            DatabasePath.CURRENCY_DATABASE_NAME
+        )
             .build()
 
         val supportSQLiteDatabase: SupportSQLiteDatabase = roomDatabaseRead.openHelper.readableDatabase
@@ -38,6 +41,6 @@ class ReadDatabase(var context: Context) {
         }
         roomDatabaseRead.close()
 
-        currencyDataViewModel.recyclerViewItemsCurrencyData.postValue(recyclerViewItemsDataStructure)
+        currencyDataViewModel.recyclerViewItemsRatesData.postValue(recyclerViewItemsDataStructure)
     }
 }

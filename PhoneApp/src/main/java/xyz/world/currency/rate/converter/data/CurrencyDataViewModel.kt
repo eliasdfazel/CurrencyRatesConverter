@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.*
+import net.geekstools.floatshort.PRO.Widget.RoomDatabase.DatabaseDataModel
 import org.json.JSONObject
 
 class CurrencyDataViewModel : ViewModel() {
@@ -14,12 +15,16 @@ class CurrencyDataViewModel : ViewModel() {
         }
     }
 
-    val recyclerViewItemsCurrencyData: MutableLiveData<ArrayList<RecyclerViewItemsDataStructure>> by lazy {
+    val recyclerViewItemsRatesData: MutableLiveData<ArrayList<RecyclerViewItemsDataStructure>> by lazy {
         MutableLiveData<ArrayList<RecyclerViewItemsDataStructure>>()
     }
 
-    val recyclerViewItemsCurrencyRate: MutableLiveData<ArrayList<RecyclerViewItemsDataStructure>> by lazy {
+    val recyclerViewItemsRatesExchange: MutableLiveData<ArrayList<RecyclerViewItemsDataStructure>> by lazy {
         MutableLiveData<ArrayList<RecyclerViewItemsDataStructure>>()
+    }
+
+    val supportedCurrencyList: MutableLiveData<ArrayList<DatabaseDataModel>> by lazy {
+        MutableLiveData<ArrayList<DatabaseDataModel>>()
     }
 
     private val recyclerViewItemsDataStructure: ArrayList<RecyclerViewItemsDataStructure> = ArrayList<RecyclerViewItemsDataStructure>()
@@ -44,7 +49,7 @@ class CurrencyDataViewModel : ViewModel() {
             }
         }
 
-        recyclerViewItemsCurrencyData
+        recyclerViewItemsRatesData
             .postValue(recyclerViewItemsDataStructure)
     }
 
@@ -67,7 +72,7 @@ class CurrencyDataViewModel : ViewModel() {
             }
         }
 
-        recyclerViewItemsCurrencyRate
+        recyclerViewItemsRatesExchange
             .postValue(recyclerViewItemsRatesStructure)
     }
 }

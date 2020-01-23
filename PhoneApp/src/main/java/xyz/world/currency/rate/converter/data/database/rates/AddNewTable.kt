@@ -1,8 +1,9 @@
-package xyz.world.currency.rate.converter.data.database
+package xyz.world.currency.rate.converter.data.database.rates
 
 import android.database.sqlite.SQLiteException
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
+import xyz.world.currency.rate.converter.data.database.DatabasePath
 
 
 class AddNewTable {

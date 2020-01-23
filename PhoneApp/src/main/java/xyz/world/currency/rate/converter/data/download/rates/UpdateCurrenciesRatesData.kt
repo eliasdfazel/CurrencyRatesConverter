@@ -1,4 +1,4 @@
-package xyz.world.currency.rate.converter.data.download
+package xyz.world.currency.rate.converter.data.download.rates
 
 import android.content.Context
 import android.util.Log
@@ -10,16 +10,16 @@ import com.android.volley.toolbox.Volley
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.*
-import net.geekstools.floatshort.PRO.Widget.RoomDatabase.CurrencyDataInterface
+import net.geekstools.floatshort.PRO.Widget.RoomDatabase.DatabaseInterface
 import org.json.JSONException
 import org.json.JSONObject
 import xyz.learn.world.heritage.SavedData.PreferencesHandler
 import xyz.world.currency.rate.converter.data.CurrencyDataViewModel
-import xyz.world.currency.rate.converter.data.JsonDataStructure
+import xyz.world.currency.rate.converter.data.RatesJsonDataStructure
 import xyz.world.currency.rate.converter.data.database.DatabasePath
-import xyz.world.currency.rate.converter.data.database.ReadDatabase
-import xyz.world.currency.rate.converter.data.database.WriteDatabase
-import xyz.world.currency.rate.converter.data.database.WriteDatabaseEssentials
+import xyz.world.currency.rate.converter.data.database.rates.ReadRatesDatabase
+import xyz.world.currency.rate.converter.data.database.rates.WriteRatesDatabase
+import xyz.world.currency.rate.converter.data.database.rates.WriteRatesDatabaseEssentials
 import xyz.world.currency.rate.converter.utils.checkpoints.DatabaseCheckpoint
 import xyz.world.currency.rate.converter.utils.checkpoints.SystemCheckpoints
 import java.util.concurrent.TimeUnit
@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit
 /**
  * Call for Updating Data on Server Side Or Updating Local Data from Cloud
  */
-class UpdateCloudData (var systemCheckpoints: SystemCheckpoints) {
+class UpdateCurrenciesRatesData (var systemCheckpoints: SystemCheckpoints) {
 
     companion object {
         var CONTINUE_UPDATE_SUBSCRIPTION: Boolean = true
@@ -64,14 +64,14 @@ class UpdateCloudData (var systemCheckpoints: SystemCheckpoints) {
 
                 val currencyPreferences = PreferencesHandler(context).CurrencyPreferences()
                 val baseCurrency = currencyPreferences.readSaveCurrency()
-                if (!DatabaseCheckpoint().doesTableExist(context, baseCurrency)) {
+                if (!DatabaseCheckpoint(context).doesTableExist(baseCurrency)) {
                     Log.d("UpdateCloudData", "Updating Database")
 
                     jsonObjectRequest(context,
                         currencyDataViewModel)
 
                 } else {
-                    val lastTimeUpdate = currencyPreferences.readLastUpdate()
+                    val lastTimeUpdate = currencyPreferences.readLastRatesUpdate()
                     val timeDiffer = (System.currentTimeMillis() - lastTimeUpdate)
                     val thirtyMinutesMillis = (30*60*1000)
                     if (timeDiffer > thirtyMinutesMillis) {
@@ -83,7 +83,9 @@ class UpdateCloudData (var systemCheckpoints: SystemCheckpoints) {
                     } else {
                         Log.d("Getting Information", "Reading Database")
 
-                        ReadDatabase(context)
+                        ReadRatesDatabase(
+                            context
+                        )
                             .readAllData(baseCurrency, currencyDataViewModel)
                     }
                 }
@@ -104,23 +106,33 @@ class UpdateCloudData (var systemCheckpoints: SystemCheckpoints) {
             Endpoint().BASE_Link + PreferencesHandler(context).CurrencyPreferences().readSaveCurrency(),
             null,
             Response.Listener<JSONObject?> { response ->
-                Log.d("Json Result: Currency List", response.toString())
+                Log.d("Json Result: Currency Rates", response.toString())
 
-                if (response != null) {
+                if (response != null && response.getBoolean(RatesJsonDataStructure.SUCCESS)) {
                     try {
-                        val baseCurrency: String = response.getString(JsonDataStructure.SOURCE)
-                        val currencyRates = response.getJSONObject(JsonDataStructure.QUOTES)
+                        val baseCurrency: String = response.getString(RatesJsonDataStructure.SOURCE)
+                        val currencyRates = response.getJSONObject(RatesJsonDataStructure.QUOTES)
 
                         val updateTimestamp: Long = System.currentTimeMillis()
-                        PreferencesHandler(context).CurrencyPreferences().saveLastUpdate(updateTimestamp)
+                        PreferencesHandler(context).CurrencyPreferences().saveLastRatesUpdate(updateTimestamp)
 
                         GlobalScope.launch {
-                            val roomDatabase = Room.databaseBuilder(context, CurrencyDataInterface::class.java, DatabasePath.CURRENCY_DATABASE_NAME)
+                            val roomDatabase = Room.databaseBuilder(context, DatabaseInterface::class.java, DatabasePath.CURRENCY_DATABASE_NAME)
                                 .build()
 
-                            WriteDatabaseEssentials(roomDatabase, baseCurrency, updateTimestamp, currencyRates, currencyDataViewModel).also {
-                                val writeDatabase = WriteDatabase(context, it)
-                                writeDatabase.handleDatabase()
+                            WriteRatesDatabaseEssentials(
+                                roomDatabase,
+                                baseCurrency,
+                                updateTimestamp,
+                                currencyRates,
+                                currencyDataViewModel
+                            ).also {
+                                val writeRatesDatabase =
+                                    WriteRatesDatabase(
+                                        context,
+                                        it
+                                    )
+                                writeRatesDatabase.handleRatesDatabase()
                             }
                         }
                     } catch (e: JSONException) {

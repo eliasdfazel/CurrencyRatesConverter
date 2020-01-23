@@ -22,18 +22,19 @@ import com.bumptech.glide.request.target.Target
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.currency_list_view.*
 import kotlinx.android.synthetic.main.entry_configurations.*
+import net.geekstools.floatshort.PRO.Widget.RoomDatabase.DatabaseDataModel
 import xyz.learn.world.heritage.SavedData.PreferencesHandler
 import xyz.world.currency.rate.converter.R
 import xyz.world.currency.rate.converter.data.CurrencyDataViewModel
 import xyz.world.currency.rate.converter.data.RecyclerViewItemsDataStructure
-import xyz.world.currency.rate.converter.data.download.UpdateCloudData
+import xyz.world.currency.rate.converter.data.download.currencies.UpdateSupportedListData
+import xyz.world.currency.rate.converter.data.download.rates.UpdateCurrenciesRatesData
 import xyz.world.currency.rate.converter.ui.adapter.CurrencyAdapter
 import xyz.world.currency.rate.converter.ui.adapter.CustomLinearLayoutManager
 import xyz.world.currency.rate.converter.utils.checkpoints.NetworkConnectionListener
 import xyz.world.currency.rate.converter.utils.checkpoints.SystemCheckpoints
 import xyz.world.currency.rate.converter.utils.saved.CountryData
 import xyz.world.currency.rate.converter.utils.ui.setupUI
-
 
 class CurrencyList : Fragment() {
 
@@ -65,7 +66,42 @@ class CurrencyList : Fragment() {
             .of(this@CurrencyList)
             .get(CurrencyDataViewModel::class.java)
 
-        currencyDataViewModel.recyclerViewItemsCurrencyData.observe(viewLifecycleOwner,
+        currencyDataViewModel.supportedCurrencyList.observe(viewLifecycleOwner,
+            Observer<ArrayList<DatabaseDataModel>>  {
+                Glide.with(context!!)
+                    .load(CountryData().flagCountryLink(PreferencesHandler(context!!).CurrencyPreferences().readSaveCurrency().toLowerCase()))
+                    .diskCacheStrategy(DiskCacheStrategy.DATA)
+                    .addListener(object : RequestListener<Drawable> {
+                        override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
+                            e?.printStackTrace()
+
+                            activity?.runOnUiThread {
+                                currentCurrencyFlag.setImageDrawable(context!!.getDrawable(R.drawable.currency_symbols_icon))
+                            }
+
+                            return true
+                        }
+
+                        override fun onResourceReady(drawable: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
+                            activity?.runOnUiThread {
+                                currentCurrencyFlag.setImageDrawable(drawable)
+                            }
+
+                            return true
+                        }
+                    })
+                    .submit()
+
+                currentCurrencyFlag.setOnClickListener {
+
+
+
+                }
+
+
+            })
+
+        currencyDataViewModel.recyclerViewItemsRatesData.observe(viewLifecycleOwner,
             Observer<ArrayList<RecyclerViewItemsDataStructure>> {
                 if (it.size > 0) {
                     progressBar.visibility = View.GONE
@@ -83,7 +119,7 @@ class CurrencyList : Fragment() {
                 Log.d("LiveData", "Observing ItemsDataStructure")
             })
 
-        currencyDataViewModel.recyclerViewItemsCurrencyRate.observe(viewLifecycleOwner,
+        currencyDataViewModel.recyclerViewItemsRatesExchange.observe(viewLifecycleOwner,
             Observer<ArrayList<RecyclerViewItemsDataStructure>> { payloadData ->
                 if (currencyAdapter == null) {
                     if (payloadData.size > 0) {
@@ -108,7 +144,7 @@ class CurrencyList : Fragment() {
 
         CurrencyDataViewModel.baseCurrency.observe(viewLifecycleOwner,
             Observer { newBaseCurrency ->
-                UpdateCloudData(systemCheckpoints)
+                UpdateCurrenciesRatesData(systemCheckpoints)
                     .triggerCloudDataUpdateSchedule(context!!, currencyDataViewModel)
 
                 Snackbar.make(mainView, context!!.getString(R.string.selectedCurrency) + newBaseCurrency, Snackbar.LENGTH_LONG).show()
@@ -118,7 +154,7 @@ class CurrencyList : Fragment() {
 
         activity?.toolbarOption!!.setOnClickListener {
             if (systemCheckpoints.networkConnection()) {
-                UpdateCloudData(systemCheckpoints)
+                UpdateCurrenciesRatesData(systemCheckpoints)
                     .triggerCloudDataUpdateForce(context!!, currencyDataViewModel)
 
                 Snackbar.make(mainView, context!!.getString(R.string.updatingForce), Snackbar.LENGTH_LONG).show()
@@ -127,8 +163,11 @@ class CurrencyList : Fragment() {
             }
         }
 
-        UpdateCloudData(systemCheckpoints)
+        UpdateCurrenciesRatesData(systemCheckpoints)
             .triggerCloudDataUpdateSchedule(context!!, currencyDataViewModel)
+
+        UpdateSupportedListData(systemCheckpoints)
+            .triggerSupportedCurrenciesUpdate(context!!, currencyDataViewModel)
     }
 
     override fun onStart() {
@@ -137,26 +176,6 @@ class CurrencyList : Fragment() {
         activity?.let {
             NetworkConnectionListener(it)
         }
-
-        Glide.with(context!!)
-            .load(CountryData().flagCountryLink(PreferencesHandler(context!!).CurrencyPreferences().readSaveCurrency().toLowerCase()))
-            .diskCacheStrategy(DiskCacheStrategy.DATA)
-            .addListener(object : RequestListener<Drawable> {
-                override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
-                    e?.printStackTrace()
-
-                    return true
-                }
-
-                override fun onResourceReady(drawable: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
-                    activity?.runOnUiThread {
-                        currentCurrencyFlag.setImageDrawable(drawable)
-                    }
-
-                    return true
-                }
-            })
-            .submit()
 
         typeRate.setOnEditorActionListener { textView, actionId, event ->
             when (actionId) {

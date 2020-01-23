@@ -14,7 +14,7 @@ internal class PreferencesHandler(var context: Context) {
          */
         fun saveLastCurrency(valueToSave: String?) {
             with (sharedPreferences.edit()) {
-                this?.putString("LastCurrency", valueToSave)
+                this?.putString("LastSelectedCurrency", valueToSave)
                 this?.commit()
             }
         }
@@ -23,18 +23,29 @@ internal class PreferencesHandler(var context: Context) {
          * Get selected currency code by user.
          */
         fun readSaveCurrency() : String {
-            return sharedPreferences.getString("LastCurrency", "USD")!!
+            return sharedPreferences.getString("LastSelectedCurrency", "USD")!!
         }
 
-        fun saveLastUpdate(valueToSave: Long) {
+        fun saveLastRatesUpdate(valueToSave: Long) {
             with (sharedPreferences.edit()) {
-                this?.putLong("LastUpdate", (valueToSave * 1000))
+                this?.putLong("LastRatesUpdate", (valueToSave * 1000))
                 this?.commit()
             }
         }
 
-        fun readLastUpdate() : Long {
-            return sharedPreferences.getLong("LastUpdate", 0)
+        fun readLastRatesUpdate() : Long {
+            return sharedPreferences.getLong("LastRatesUpdate", 0)
+        }
+
+        fun saveLastCurrencyListUpdate(valueToSave: Long) {
+            with (sharedPreferences.edit()) {
+                this?.putLong("LastCurrencyListUpdate", (valueToSave * 1000))
+                this?.commit()
+            }
+        }
+
+        fun readLastCurrencyListUpdate() : Long {
+            return sharedPreferences.getLong("LastCurrencyListUpdate", 0)
         }
     }
 }
