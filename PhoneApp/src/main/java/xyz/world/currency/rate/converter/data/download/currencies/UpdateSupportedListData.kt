@@ -7,7 +7,6 @@ import androidx.room.Room
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import net.geekstools.floatshort.PRO.Widget.RoomDatabase.DatabaseInterface
 import org.json.JSONException
@@ -62,22 +61,18 @@ class UpdateSupportedListData (var systemCheckpoints: SystemCheckpoints) {
                         val updateTimestamp: Long = System.currentTimeMillis()
                         PreferencesHandler(context).CurrencyPreferences().saveLastCurrencyListUpdate(updateTimestamp)
 
-                        GlobalScope.launch {
-
-
-                            WriteCurrenciesDatabaseEssentials(
-                                roomDatabase,
-                                updateTimestamp,
-                                currencyList,
-                                currencyDataViewModel
-                            ).also { databaseEssentials ->
-                                val writeCurrenciesDatabase =
-                                    WriteCurrenciesDatabase(
-                                        context,
-                                        databaseEssentials
-                                    )
-                                writeCurrenciesDatabase.handleCurrenciesDatabase()
-                            }
+                        WriteCurrenciesDatabaseEssentials(
+                            roomDatabase,
+                            updateTimestamp,
+                            currencyList,
+                            currencyDataViewModel
+                        ).also { databaseEssentials ->
+                            val writeCurrenciesDatabase =
+                                WriteCurrenciesDatabase(
+                                    context,
+                                    databaseEssentials
+                                )
+                            writeCurrenciesDatabase.handleCurrenciesDatabase()
                         }
                     } catch (e: JSONException) {
                         e.printStackTrace()
