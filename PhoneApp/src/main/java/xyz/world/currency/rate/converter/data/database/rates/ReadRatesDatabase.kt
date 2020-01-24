@@ -41,6 +41,6 @@ class ReadRatesDatabase(var context: Context) {
         }
         roomDatabaseRead.close()
 
-        currencyDataViewModel.recyclerViewItemsRatesData.postValue(recyclerViewItemsDataStructure)
+        currencyDataViewModel.recyclerViewItemsRatesExchange.postValue(recyclerViewItemsDataStructure)
     }
 }

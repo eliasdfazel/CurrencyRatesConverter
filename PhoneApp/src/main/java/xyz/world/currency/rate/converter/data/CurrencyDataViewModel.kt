@@ -15,10 +15,6 @@ class CurrencyDataViewModel : ViewModel() {
         }
     }
 
-    val recyclerViewItemsRatesData: MutableLiveData<ArrayList<RecyclerViewItemsDataStructure>> by lazy {
-        MutableLiveData<ArrayList<RecyclerViewItemsDataStructure>>()
-    }
-
     val recyclerViewItemsRatesExchange: MutableLiveData<ArrayList<RecyclerViewItemsDataStructure>> by lazy {
         MutableLiveData<ArrayList<RecyclerViewItemsDataStructure>>()
     }
@@ -49,7 +45,7 @@ class CurrencyDataViewModel : ViewModel() {
             }
         }
 
-        recyclerViewItemsRatesData
+        recyclerViewItemsRatesExchange
             .postValue(recyclerViewItemsDataStructure)
     }
 

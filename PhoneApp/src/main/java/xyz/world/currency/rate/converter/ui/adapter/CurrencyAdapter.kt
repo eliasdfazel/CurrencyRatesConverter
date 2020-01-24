@@ -26,7 +26,6 @@ class CurrencyAdapter(var context: Context) : RecyclerView.Adapter<ItemViewHolde
 
     var recyclerViewItemsDataStructure: ArrayList<RecyclerViewItemsDataStructure> = ArrayList<RecyclerViewItemsDataStructure>()
 
-    var updateFirstRowPayload: Boolean = false
     var multiplyNumber: Double = 1.0
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
@@ -90,13 +89,16 @@ class CurrencyAdapter(var context: Context) : RecyclerView.Adapter<ItemViewHolde
 
         itemViewHolder.mainView.setOnClickListener {
             Log.d("Base Currency", itemViewHolder.currencyName.text.toString())
+
             UpdateCurrenciesRatesData.CONTINUE_UPDATE_SUBSCRIPTION = false
 
-            PreferencesHandler(context).CurrencyPreferences().saveLastCurrency(itemViewHolder.currencyName.text.toString())
-            CurrencyDataViewModel.baseCurrency.postValue(itemViewHolder.currencyName.text.toString())
 
             multiplyNumber = itemViewHolder.currencyRate.text.toString().toDouble()
             Log.d("Base Rate Multiplier", "${multiplyNumber}")
+
+
+            PreferencesHandler(context).CurrencyPreferences().saveLastCurrency(itemViewHolder.currencyName.text.toString())
+            CurrencyDataViewModel.baseCurrency.postValue(itemViewHolder.currencyName.text.toString())
 
             //Change [CONTINUE_UPDATE_SUBSCRIPTION] to allow flow continue.
             Handler().postDelayed({

@@ -28,7 +28,7 @@ internal class PreferencesHandler(var context: Context) {
 
         fun saveLastRatesUpdate(valueToSave: Long) {
             with (sharedPreferences.edit()) {
-                this?.putLong("LastRatesUpdate", (valueToSave * 1000))
+                this?.putLong("LastRatesUpdate", (valueToSave))
                 this?.commit()
             }
         }
@@ -39,7 +39,7 @@ internal class PreferencesHandler(var context: Context) {
 
         fun saveLastCurrencyListUpdate(valueToSave: Long) {
             with (sharedPreferences.edit()) {
-                this?.putLong("LastCurrencyListUpdate", (valueToSave * 1000))
+                this?.putLong("LastCurrencyListUpdate", (valueToSave))
                 this?.commit()
             }
         }

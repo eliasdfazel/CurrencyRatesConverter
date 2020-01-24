@@ -87,28 +87,10 @@ class CurrencyList : Fragment(), View.OnClickListener, View.OnLongClickListener 
                 }
             })
 
-        currencyDataViewModel.recyclerViewItemsRatesData.observe(viewLifecycleOwner,
+        currencyDataViewModel.recyclerViewItemsRatesExchange.observe(this@CurrencyList,
             Observer<ArrayList<RecyclerViewItemsDataStructure>> {
-                if (it.size > 0) {
-                    progressBar.visibility = View.GONE
-                    activity!!.toolbarOption.setImageDrawable(context?.getDrawable(R.drawable.refresh_icon))
-                } else {
-                    activity!!.toolbarOption.setImageDrawable(context?.getDrawable(R.drawable.no_internet))
-                }
-
-                currencyAdapter = CurrencyAdapter(context!!)
-                currencyAdapter?.recyclerViewItemsDataStructure = it
-
-                loadView.adapter = currencyAdapter
-                currencyAdapter!!.notifyDataSetChanged()
-
-                Log.d("LiveData", "Observing ItemsDataStructure")
-            })
-
-        currencyDataViewModel.recyclerViewItemsRatesExchange.observe(viewLifecycleOwner,
-            Observer<ArrayList<RecyclerViewItemsDataStructure>> { payloadData ->
                 if (currencyAdapter == null) {
-                    if (payloadData.size > 0) {
+                    if (it.size > 0) {
                         progressBar.visibility = View.GONE
                         activity!!.toolbarOption.setImageDrawable(context?.getDrawable(R.drawable.refresh_icon))
                     } else {
@@ -116,24 +98,57 @@ class CurrencyList : Fragment(), View.OnClickListener, View.OnLongClickListener 
                     }
 
                     currencyAdapter = CurrencyAdapter(context!!)
-                    currencyAdapter?.recyclerViewItemsDataStructure = payloadData
+                    currencyAdapter?.recyclerViewItemsDataStructure = it
 
                     loadView.adapter = currencyAdapter
                     currencyAdapter!!.notifyDataSetChanged()
+
+                    println(">>> 11")
+
                 } else {
-                    currencyAdapter?.recyclerViewItemsDataStructure = payloadData
-                    currencyAdapter?.notifyItemRangeChanged(0, currencyAdapter!!.itemCount, payloadData)
+
+                    println(">>> 22")
+
+                    currencyAdapter?.recyclerViewItemsDataStructure = it
+                    currencyAdapter?.notifyItemRangeChanged(0, currencyAdapter!!.itemCount, it)
                 }
 
-                Log.d("LiveData", "Observing ItemsCurrencyRate")
+                println(">>> 33")
+
+                Log.d("LiveData", "Observing ItemsDataStructure")
             })
 
         CurrencyDataViewModel.baseCurrency.observe(viewLifecycleOwner,
             Observer { newBaseCurrency ->
-                UpdateCurrenciesRatesData(systemCheckpoints)
-                    .triggerCloudDataUpdateSchedule(context!!, currencyDataViewModel)
 
-                Snackbar.make(mainView, context!!.getString(R.string.selectedCurrency) + newBaseCurrency, Snackbar.LENGTH_LONG).show()
+                UpdateCurrenciesRatesData(systemCheckpoints)
+                    .triggerCloudDataUpdateForce(context!!, currencyDataViewModel)
+
+                Snackbar.make(mainView, "${context!!.getString(R.string.selectedCurrency)} ${newBaseCurrency}", Snackbar.LENGTH_LONG).show()
+
+                Glide.with(context!!)
+                    .load(CountryData().flagCountryLink(PreferencesHandler(context!!).CurrencyPreferences().readSaveCurrency().toLowerCase()))
+                    .diskCacheStrategy(DiskCacheStrategy.DATA)
+                    .addListener(object : RequestListener<Drawable> {
+                        override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
+                            e?.printStackTrace()
+
+                            activity?.runOnUiThread {
+                                currentCurrencyFlag.setImageDrawable(context!!.getDrawable(R.drawable.currency_symbols_icon))
+                            }
+
+                            return true
+                        }
+
+                        override fun onResourceReady(drawable: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
+                            activity?.runOnUiThread {
+                                currentCurrencyFlag.setImageDrawable(drawable)
+                            }
+
+                            return true
+                        }
+                    })
+                    .submit()
 
                 Log.d("Base Currency Changed", newBaseCurrency)
             })
@@ -170,6 +185,7 @@ class CurrencyList : Fragment(), View.OnClickListener, View.OnLongClickListener 
                         textInputLayout.isErrorEnabled = false
 
                         val multiplier = textView?.text.toString().toDouble()
+
                         currencyAdapter?.multiplyNumber = multiplier
                         currencyAdapter?.notifyItemRangeChanged(0, currencyAdapter!!.itemCount, multiplier)
                     } else {
@@ -177,6 +193,7 @@ class CurrencyList : Fragment(), View.OnClickListener, View.OnLongClickListener 
                             textInputLayout.isErrorEnabled = false
 
                             val multiplier = textView?.text.toString().toDouble()
+
                             currencyAdapter?.multiplyNumber = multiplier
                             currencyAdapter?.notifyItemRangeChanged(0, currencyAdapter!!.itemCount, multiplier)
                         } else {
@@ -211,6 +228,7 @@ class CurrencyList : Fragment(), View.OnClickListener, View.OnLongClickListener 
                         textInputLayout.isErrorEnabled = false
 
                         val multiplier = typeRate.text.toString().toDouble()
+
                         currencyAdapter?.multiplyNumber = multiplier
                         currencyAdapter?.notifyItemRangeChanged(0, currencyAdapter!!.itemCount, multiplier)
                     }
@@ -237,6 +255,7 @@ class CurrencyList : Fragment(), View.OnClickListener, View.OnLongClickListener 
             PreferencesHandler(context!!).CurrencyPreferences().saveLastCurrency(currenciesListData[clickedView.id].CurrencyCode)
             CurrencyDataViewModel.baseCurrency.postValue(currenciesListData[clickedView.id].CurrencyCode)
 
+            currencyAdapter?.multiplyNumber = 1.0
 
             //Change [CONTINUE_UPDATE_SUBSCRIPTION] to allow flow continue.
             Handler().postDelayed({

@@ -61,7 +61,6 @@ class UpdateCurrenciesRatesData (var systemCheckpoints: SystemCheckpoints) {
             .doOnNext {
                 Log.d("Observable", "${it}")
 
-
                 val currencyPreferences = PreferencesHandler(context).CurrencyPreferences()
                 val baseCurrency = currencyPreferences.readSaveCurrency()
                 if (!DatabaseCheckpoint(context).doesTableExist(baseCurrency)) {
@@ -83,9 +82,7 @@ class UpdateCurrenciesRatesData (var systemCheckpoints: SystemCheckpoints) {
                     } else {
                         Log.d("Getting Information", "Reading Database")
 
-                        ReadRatesDatabase(
-                            context
-                        )
+                        ReadRatesDatabase(context)
                             .readAllData(baseCurrency, currencyDataViewModel)
                     }
                 }
