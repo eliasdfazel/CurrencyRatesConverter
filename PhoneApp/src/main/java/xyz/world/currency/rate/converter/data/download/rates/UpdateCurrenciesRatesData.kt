@@ -9,7 +9,10 @@ import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import net.geekstools.floatshort.PRO.Widget.RoomDatabase.DatabaseInterface
 import org.json.JSONException
 import org.json.JSONObject
@@ -38,14 +41,22 @@ class UpdateCurrenciesRatesData (var systemCheckpoints: SystemCheckpoints) {
 
     /**
      * Invoking Cloud Function to update the currency rates & date in database.
-     * It will only pass FirebaseUser.UID as userId to update users specific database and selected base currency to update order of database.
-     * All Process of downloading new JsonObject Data & extracting data from JsonObjects will be done on server side.
-     * It will only update changed data on database, so on device listener only receive Document Snapshot when data updated.
      */
     fun triggerCloudDataUpdateSchedule(context: Context, currencyDataViewModel: CurrencyDataViewModel) {
 
+
+        /*
+         *
+         *
+         * UpdateCurrenciesRatesDataWorkManager().triggerCloudDataUpdateScheduleWorkManager(context!!)
+         *
+         */
+
         Observable
             .interval(1, (30*60), TimeUnit.SECONDS)
+            .doOnSubscribe {
+                PreferencesHandler(context).CurrencyPreferences().saveLastRatesUpdate(System.currentTimeMillis())
+            }
             .repeatUntil {
                 currentBaseCurrency != CurrencyDataViewModel.baseCurrency.value
             }
@@ -114,28 +125,24 @@ class UpdateCurrenciesRatesData (var systemCheckpoints: SystemCheckpoints) {
                     try {
                         val baseCurrency: String = response.getString(RatesJsonDataStructure.SOURCE)
                         val currencyRates = response.getJSONObject(RatesJsonDataStructure.QUOTES)
-
                         val updateTimestamp: Long = System.currentTimeMillis()
-                        PreferencesHandler(context).CurrencyPreferences().saveLastRatesUpdate(updateTimestamp)
 
-                        GlobalScope.launch {
-                            val roomDatabase = Room.databaseBuilder(context, DatabaseInterface::class.java, DatabasePath.CURRENCY_DATABASE_NAME)
-                                .build()
+                        val roomDatabase = Room.databaseBuilder(context, DatabaseInterface::class.java, DatabasePath.CURRENCY_DATABASE_NAME)
+                            .build()
 
-                            WriteRatesDatabaseEssentials(
-                                roomDatabase,
-                                baseCurrency,
-                                updateTimestamp,
-                                currencyRates,
-                                currencyDataViewModel
-                            ).also {
-                                val writeRatesDatabase =
-                                    WriteRatesDatabase(
-                                        context,
-                                        it
-                                    )
-                                writeRatesDatabase.handleRatesDatabase()
-                            }
+                        WriteRatesDatabaseEssentials(
+                            roomDatabase,
+                            baseCurrency,
+                            updateTimestamp,
+                            currencyRates,
+                            currencyDataViewModel
+                        ).also {
+                            val writeRatesDatabase =
+                                WriteRatesDatabase(
+                                    context,
+                                    it
+                                )
+                            writeRatesDatabase.handleRatesDatabase()
                         }
                     } catch (e: JSONException) {
                         e.printStackTrace()

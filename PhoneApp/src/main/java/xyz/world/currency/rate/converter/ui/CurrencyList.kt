@@ -1,6 +1,5 @@
 package xyz.world.currency.rate.converter.ui
 
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Handler
 import android.text.Editable
@@ -18,11 +17,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.currencies_item.view.*
 import kotlinx.android.synthetic.main.currency_list.*
@@ -43,6 +38,8 @@ import xyz.world.currency.rate.converter.ui.adapter.CustomLinearLayoutManager
 import xyz.world.currency.rate.converter.utils.checkpoints.NetworkConnectionListener
 import xyz.world.currency.rate.converter.utils.checkpoints.SystemCheckpoints
 import xyz.world.currency.rate.converter.utils.saved.CountryData
+import xyz.world.currency.rate.converter.utils.ui.ClickedViewTags
+import xyz.world.currency.rate.converter.utils.ui.downloadAndSetFlagImage
 import xyz.world.currency.rate.converter.utils.ui.setupUI
 
 class CurrencyList : Fragment(), View.OnClickListener, View.OnLongClickListener {
@@ -50,6 +47,7 @@ class CurrencyList : Fragment(), View.OnClickListener, View.OnLongClickListener 
     var currencyAdapter: CurrencyAdapter? = null
 
     var currenciesListData: ArrayList<DatabaseDataModel> = ArrayList<DatabaseDataModel>()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -138,29 +136,8 @@ class CurrencyList : Fragment(), View.OnClickListener, View.OnLongClickListener 
                 }
 
                 Handler().postDelayed({
-                    Glide.with(context!!)
-                        .load(CountryData().flagCountryLink(newBaseCurrency.toLowerCase()))
-                        .diskCacheStrategy(DiskCacheStrategy.DATA)
-                        .addListener(object : RequestListener<Drawable> {
-                            override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
-                                e?.printStackTrace()
-
-                                activity?.runOnUiThread {
-                                    currentCurrencyFlag.setImageDrawable(context!!.getDrawable(R.drawable.currency_symbols_icon))
-                                }
-
-                                return true
-                            }
-
-                            override fun onResourceReady(drawable: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
-                                activity?.runOnUiThread {
-                                    currentCurrencyFlag.setImageDrawable(drawable)
-                                }
-
-                                return true
-                            }
-                        })
-                        .submit()
+                    downloadAndSetFlagImage(context!!,
+                        currentCurrencyFlag)
                 }, 1000)
 
                 Log.d("Base Currency Changed", newBaseCurrency)
@@ -262,44 +239,22 @@ class CurrencyList : Fragment(), View.OnClickListener, View.OnLongClickListener 
     override fun onClick(clickedView: View?) {
 
         if (clickedView is ConstraintLayout) {
-            PreferencesHandler(context!!).CurrencyPreferences().saveLastCurrency(currenciesListData[clickedView.id].CurrencyCode)
-            CurrencyDataViewModel.baseCurrency.postValue(currenciesListData[clickedView.id].CurrencyCode)
-
-            Glide.with(context!!)
-                .load(CountryData().flagCountryLink(PreferencesHandler(context!!).CurrencyPreferences().readSaveCurrency().toLowerCase()))
-                .diskCacheStrategy(DiskCacheStrategy.DATA)
-                .addListener(object : RequestListener<Drawable> {
-                    override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
-                        e?.printStackTrace()
-
-                        activity?.runOnUiThread {
-                            currentCurrencyFlag.setImageDrawable(context!!.getDrawable(R.drawable.currency_symbols_icon))
-                        }
-
-                        return true
-                    }
-
-                    override fun onResourceReady(drawable: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
-                        activity?.runOnUiThread {
-                            currentCurrencyFlag.setImageDrawable(drawable)
-                        }
-
-                        return true
-                    }
-                })
-                .submit()
-
-            currenciesListInclude.visibility = View.GONE
+            when (clickedView.tag) {
+                ClickedViewTags.CURRENCIES_SELECTOR_ITEM -> {
+                    clickOnCurrencySelector(clickedView.id)
+                }
+            }
         }
     }
 
-    override fun onLongClick(clieckedView: View?): Boolean {
-        if (clieckedView is ConstraintLayout) {
-            val toast = Toast.makeText(context,
-                currenciesListData[clieckedView.id].CountryName,
-                Toast.LENGTH_LONG)
-            toast.setGravity(Gravity.TOP, 0, 0)
-            toast.show()
+    override fun onLongClick(clickedView: View?): Boolean {
+
+        if (clickedView is ConstraintLayout) {
+            when (clickedView.tag) {
+                ClickedViewTags.CURRENCIES_SELECTOR_ITEM -> {
+                    longClickOnCurrencySelector(clickedView.id)
+                }
+            }
         }
 
         return true
@@ -319,6 +274,7 @@ class CurrencyList : Fragment(), View.OnClickListener, View.OnLongClickListener 
                 .into(flagImageView)
 
             currenciesItem.id = index
+            currenciesItem.tag = ClickedViewTags.CURRENCIES_SELECTOR_ITEM
             currenciesItem.setOnClickListener(this@CurrencyList)
             currenciesItem.setOnLongClickListener(this@CurrencyList)
             currenciesListView.addView(currenciesItem)
@@ -328,29 +284,26 @@ class CurrencyList : Fragment(), View.OnClickListener, View.OnLongClickListener 
             currenciesListInclude.visibility = View.VISIBLE
         }
 
-        Glide.with(context!!)
-            .load(CountryData().flagCountryLink(PreferencesHandler(context!!).CurrencyPreferences().readSaveCurrency().toLowerCase()))
-            .diskCacheStrategy(DiskCacheStrategy.DATA)
-            .addListener(object : RequestListener<Drawable> {
-                override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
-                    e?.printStackTrace()
-
-                    activity?.runOnUiThread {
-                        currentCurrencyFlag.setImageDrawable(context!!.getDrawable(R.drawable.currency_symbols_icon))
-                    }
-
-                    return true
-                }
-
-                override fun onResourceReady(drawable: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
-                    activity?.runOnUiThread {
-                        currentCurrencyFlag.setImageDrawable(drawable)
-                    }
-
-                    return true
-                }
-            })
-            .submit()
+        downloadAndSetFlagImage(context!!, currentCurrencyFlag)
     }
 
+    private fun clickOnCurrencySelector(viewId: Int) {
+        PreferencesHandler(context!!).CurrencyPreferences().saveLastCurrency(currenciesListData[viewId].CurrencyCode)
+        CurrencyDataViewModel.baseCurrency.postValue(currenciesListData[viewId].CurrencyCode)
+
+        Handler().postDelayed({
+            downloadAndSetFlagImage(context!!,
+                currentCurrencyFlag)
+        }, 1000)
+
+        currenciesListInclude.visibility = View.GONE
+    }
+
+    private fun longClickOnCurrencySelector(viewId: Int) {
+        val toast = Toast.makeText(context,
+            currenciesListData[viewId].CountryName,
+            Toast.LENGTH_LONG)
+        toast.setGravity(Gravity.TOP, 0, 0)
+        toast.show()
+    }
 }

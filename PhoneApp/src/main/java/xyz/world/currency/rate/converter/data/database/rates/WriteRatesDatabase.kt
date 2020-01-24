@@ -5,23 +5,24 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import org.json.JSONObject
 import xyz.world.currency.rate.converter.data.CurrencyDataViewModel
 import xyz.world.currency.rate.converter.data.RoomDatabaseColumn
 import xyz.world.currency.rate.converter.utils.checkpoints.DatabaseCheckpoint
 
-data class WriteRatesDatabaseEssentials(var roomDatabase: RoomDatabase, var baseCurrency: String, var updateTimestamp: Long, var jsonObjectRates: JSONObject, var currencyDataViewModel: CurrencyDataViewModel)
+data class WriteRatesDatabaseEssentials(var roomDatabase: RoomDatabase, var baseCurrency: String, var updateTimestamp: Long, var jsonObjectRates: JSONObject, var currencyDataViewModel: CurrencyDataViewModel?)
 
-class WriteRatesDatabase(var context: Context, var writeRatesDatabaseEssentials: WriteRatesDatabaseEssentials) {
+class WriteRatesDatabase(var context: Context, private var writeRatesDatabaseEssentials: WriteRatesDatabaseEssentials) {
 
     fun handleRatesDatabase() {
-        GlobalScope.launch {
-            if (!DatabaseCheckpoint(context).doesTableExist(writeRatesDatabaseEssentials.roomDatabase, writeRatesDatabaseEssentials.baseCurrency)) {
-                insertAllData()
-            } else {
-                updateAllData()
-            }
+        if (!DatabaseCheckpoint(context).doesTableExist(writeRatesDatabaseEssentials.roomDatabase, writeRatesDatabaseEssentials.baseCurrency)) {
+            insertAllData()
+        } else {
+            updateAllData()
         }
     }
 
@@ -49,7 +50,7 @@ class WriteRatesDatabase(var context: Context, var writeRatesDatabaseEssentials:
             }
         }
 
-        writeRatesDatabaseEssentials.currencyDataViewModel.loadDataFromResult(writeRatesDatabaseEssentials.baseCurrency, writeRatesDatabaseEssentials.jsonObjectRates)
+        writeRatesDatabaseEssentials.currencyDataViewModel?.loadDataFromResult(writeRatesDatabaseEssentials.baseCurrency, writeRatesDatabaseEssentials.jsonObjectRates)
 
         writeRatesDatabaseEssentials.roomDatabase.close()
     }
@@ -74,7 +75,7 @@ class WriteRatesDatabase(var context: Context, var writeRatesDatabaseEssentials:
             }
         }
 
-        writeRatesDatabaseEssentials.currencyDataViewModel.updateDataFromResult(writeRatesDatabaseEssentials.baseCurrency, writeRatesDatabaseEssentials.jsonObjectRates)
+        writeRatesDatabaseEssentials.currencyDataViewModel?.updateDataFromResult(writeRatesDatabaseEssentials.baseCurrency, writeRatesDatabaseEssentials.jsonObjectRates)
 
         writeRatesDatabaseEssentials.roomDatabase.close()
     }
