@@ -237,7 +237,6 @@ class CurrencyList : Fragment(), View.OnClickListener, View.OnLongClickListener 
             PreferencesHandler(context!!).CurrencyPreferences().saveLastCurrency(currenciesListData[clickedView.id].CurrencyCode)
             CurrencyDataViewModel.baseCurrency.postValue(currenciesListData[clickedView.id].CurrencyCode)
 
-            currencyAdapter?.multiplyNumber = 1.0
 
             //Change [CONTINUE_UPDATE_SUBSCRIPTION] to allow flow continue.
             Handler().postDelayed({
