@@ -121,11 +121,13 @@ class CurrencyList : Fragment(), View.OnClickListener, View.OnLongClickListener 
                     CoroutineScope(Dispatchers.IO).launch {
                         val usdExchange = ReadRatesDatabase(context!!).readSpecificRateFromTableUSD(newBaseCurrency).await()
 
-                        withContext(Dispatchers.Main) {
-                            val calculateOffset = (1 / usdExchange)
-                            PreferencesHandler(context!!).CurrencyPreferences().saveRateOffset((calculateOffset).toString())
+                        val calculateOffset = (1 / usdExchange)
+                        PreferencesHandler(context!!).CurrencyPreferences().saveRateOffset((calculateOffset).toString())
 
-                            currencyAdapter?.rateOffset = calculateOffset
+                        currencyAdapter?.multiplyNumber = 1.0
+                        currencyAdapter?.rateOffset = calculateOffset
+
+                        withContext(Dispatchers.Main) {
                             currencyAdapter?.notifyItemRangeChanged(0, currencyAdapter!!.itemCount, null)
                         }
                     }
@@ -244,7 +246,6 @@ class CurrencyList : Fragment(), View.OnClickListener, View.OnLongClickListener 
                         currencyAdapter?.notifyItemRangeChanged(0, currencyAdapter!!.itemCount, multiplier)
                     }
                 }
-
             }
 
             override fun beforeTextChanged(charSequence: CharSequence?, start: Int, count: Int, after: Int) {
@@ -261,17 +262,8 @@ class CurrencyList : Fragment(), View.OnClickListener, View.OnLongClickListener 
     override fun onClick(clickedView: View?) {
 
         if (clickedView is ConstraintLayout) {
-            UpdateCurrenciesRatesData.CONTINUE_UPDATE_SUBSCRIPTION = false
-
             PreferencesHandler(context!!).CurrencyPreferences().saveLastCurrency(currenciesListData[clickedView.id].CurrencyCode)
             CurrencyDataViewModel.baseCurrency.postValue(currenciesListData[clickedView.id].CurrencyCode)
-
-            currencyAdapter?.multiplyNumber = 1.0
-
-            //Change [CONTINUE_UPDATE_SUBSCRIPTION] to allow flow continue.
-            Handler().postDelayed({
-                UpdateCurrenciesRatesData.CONTINUE_UPDATE_SUBSCRIPTION = true
-            }, 1500)
 
             Glide.with(context!!)
                 .load(CountryData().flagCountryLink(PreferencesHandler(context!!).CurrencyPreferences().readSaveCurrency().toLowerCase()))

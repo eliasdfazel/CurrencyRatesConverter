@@ -31,10 +31,6 @@ import java.util.concurrent.TimeUnit
  */
 class UpdateCurrenciesRatesData (var systemCheckpoints: SystemCheckpoints) {
 
-    companion object {
-        var CONTINUE_UPDATE_SUBSCRIPTION: Boolean = true
-    }
-
     /**
      * To check current currency & control flow of FlowableItemsDataStructure after base currency changed by item clicks.
      */
@@ -54,9 +50,8 @@ class UpdateCurrenciesRatesData (var systemCheckpoints: SystemCheckpoints) {
                 currentBaseCurrency != CurrencyDataViewModel.baseCurrency.value
             }
             .filter {
-                Log.d("Base Filter", "$CONTINUE_UPDATE_SUBSCRIPTION")
 
-                systemCheckpoints.networkConnection() && CONTINUE_UPDATE_SUBSCRIPTION
+                systemCheckpoints.networkConnection()
             }
             .subscribeOn(Schedulers.io())
             .doOnNext {
