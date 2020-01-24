@@ -28,15 +28,14 @@ import kotlinx.android.synthetic.main.currencies_item.view.*
 import kotlinx.android.synthetic.main.currency_list.*
 import kotlinx.android.synthetic.main.currency_list_view.*
 import kotlinx.android.synthetic.main.entry_configurations.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import net.geekstools.floatshort.PRO.Widget.RoomDatabase.DatabaseDataModel
 import xyz.learn.world.heritage.SavedData.PreferencesHandler
+import xyz.world.currency.rate.converter.BuildConfig
 import xyz.world.currency.rate.converter.R
 import xyz.world.currency.rate.converter.data.CurrencyDataViewModel
 import xyz.world.currency.rate.converter.data.RecyclerViewItemsDataStructure
+import xyz.world.currency.rate.converter.data.database.rates.ReadRatesDatabase
 import xyz.world.currency.rate.converter.data.download.currencies.UpdateSupportedListData
 import xyz.world.currency.rate.converter.data.download.rates.UpdateCurrenciesRatesData
 import xyz.world.currency.rate.converter.ui.adapter.CurrencyAdapter
@@ -102,18 +101,11 @@ class CurrencyList : Fragment(), View.OnClickListener, View.OnLongClickListener 
 
                     loadView.adapter = currencyAdapter
                     currencyAdapter!!.notifyDataSetChanged()
-
-                    println(">>> 11")
-
                 } else {
-
-                    println(">>> 22")
 
                     currencyAdapter?.recyclerViewItemsDataStructure = it
                     currencyAdapter?.notifyItemRangeChanged(0, currencyAdapter!!.itemCount, it)
                 }
-
-                println(">>> 33")
 
                 Log.d("LiveData", "Observing ItemsDataStructure")
             })
@@ -121,34 +113,53 @@ class CurrencyList : Fragment(), View.OnClickListener, View.OnLongClickListener 
         CurrencyDataViewModel.baseCurrency.observe(viewLifecycleOwner,
             Observer { newBaseCurrency ->
 
-                UpdateCurrenciesRatesData(systemCheckpoints)
-                    .triggerCloudDataUpdateForce(context!!, currencyDataViewModel)
+                if (BuildConfig.DEBUG) {
+                    /**
+                     * CurrencyAPI Free AccessKey Does NOT Support Source Currency Change. The Default Source is USD.
+                     * So, I calculate approx Rate Offset based on selected currency exchange rate with USD.
+                     */
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val usdExchange = ReadRatesDatabase(context!!).readSpecificRateFromTableUSD(newBaseCurrency).await()
 
-                Snackbar.make(mainView, "${context!!.getString(R.string.selectedCurrency)} ${newBaseCurrency}", Snackbar.LENGTH_LONG).show()
+                        withContext(Dispatchers.Main) {
+                            val calculateOffset = (1 / usdExchange)
+                            PreferencesHandler(context!!).CurrencyPreferences().saveRateOffset((calculateOffset).toString())
 
-                Glide.with(context!!)
-                    .load(CountryData().flagCountryLink(PreferencesHandler(context!!).CurrencyPreferences().readSaveCurrency().toLowerCase()))
-                    .diskCacheStrategy(DiskCacheStrategy.DATA)
-                    .addListener(object : RequestListener<Drawable> {
-                        override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
-                            e?.printStackTrace()
+                            currencyAdapter?.rateOffset = calculateOffset
+                            currencyAdapter?.notifyItemRangeChanged(0, currencyAdapter!!.itemCount, null)
+                        }
+                    }
+                } else {
 
-                            activity?.runOnUiThread {
-                                currentCurrencyFlag.setImageDrawable(context!!.getDrawable(R.drawable.currency_symbols_icon))
+                    UpdateCurrenciesRatesData(systemCheckpoints)
+                        .triggerCloudDataUpdateForce(context!!, currencyDataViewModel)
+                }
+
+                Handler().postDelayed({
+                    Glide.with(context!!)
+                        .load(CountryData().flagCountryLink(newBaseCurrency.toLowerCase()))
+                        .diskCacheStrategy(DiskCacheStrategy.DATA)
+                        .addListener(object : RequestListener<Drawable> {
+                            override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
+                                e?.printStackTrace()
+
+                                activity?.runOnUiThread {
+                                    currentCurrencyFlag.setImageDrawable(context!!.getDrawable(R.drawable.currency_symbols_icon))
+                                }
+
+                                return true
                             }
 
-                            return true
-                        }
+                            override fun onResourceReady(drawable: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
+                                activity?.runOnUiThread {
+                                    currentCurrencyFlag.setImageDrawable(drawable)
+                                }
 
-                        override fun onResourceReady(drawable: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
-                            activity?.runOnUiThread {
-                                currentCurrencyFlag.setImageDrawable(drawable)
+                                return true
                             }
-
-                            return true
-                        }
-                    })
-                    .submit()
+                        })
+                        .submit()
+                }, 1000)
 
                 Log.d("Base Currency Changed", newBaseCurrency)
             })

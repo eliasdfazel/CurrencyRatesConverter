@@ -26,6 +26,11 @@ class CurrencyAdapter(var context: Context) : RecyclerView.Adapter<ItemViewHolde
 
     var recyclerViewItemsDataStructure: ArrayList<RecyclerViewItemsDataStructure> = ArrayList<RecyclerViewItemsDataStructure>()
 
+    /**
+     * CurrencyAPI Free AccessKey Does NOT Support Source Currency Change. The Default Source is USD.
+     * So, I calculate approx Rate Offset based on selected currency exchange rate with USD.
+     */
+    var rateOffset: Double = PreferencesHandler(context).CurrencyPreferences().readRateOffset().toDouble()
     var multiplyNumber: Double = 1.0
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
@@ -54,7 +59,7 @@ class CurrencyAdapter(var context: Context) : RecyclerView.Adapter<ItemViewHolde
         if (payloads.isNotEmpty()) {
             Log.d("PayLoads Update", "${recyclerViewItemsDataStructure[position].currencyCode} ::: ${recyclerViewItemsDataStructure[position].currencyRate}")
 
-            itemViewHolder.currencyRate.text = (recyclerViewItemsDataStructure[position].currencyRate.times(multiplyNumber).formatToThreeDigitAfterPoint())
+            itemViewHolder.currencyRate.text = (recyclerViewItemsDataStructure[position].currencyRate.times((multiplyNumber * rateOffset)).formatToThreeDigitAfterPoint())
             itemViewHolder.currencyName.text = recyclerViewItemsDataStructure[position].currencyCode
             firestore.document(DatabasePath.FIRESTORE_REFERENCE_DIRECTORY + recyclerViewItemsDataStructure[position].currencyCode).get().addOnSuccessListener {
                 val countryName = it.getString("CountryName")

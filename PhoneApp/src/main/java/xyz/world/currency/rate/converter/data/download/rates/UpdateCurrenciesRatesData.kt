@@ -14,6 +14,7 @@ import net.geekstools.floatshort.PRO.Widget.RoomDatabase.DatabaseInterface
 import org.json.JSONException
 import org.json.JSONObject
 import xyz.learn.world.heritage.SavedData.PreferencesHandler
+import xyz.world.currency.rate.converter.BuildConfig
 import xyz.world.currency.rate.converter.data.CurrencyDataViewModel
 import xyz.world.currency.rate.converter.data.RatesJsonDataStructure
 import xyz.world.currency.rate.converter.data.database.DatabasePath
@@ -62,7 +63,11 @@ class UpdateCurrenciesRatesData (var systemCheckpoints: SystemCheckpoints) {
                 Log.d("Observable", "${it}")
 
                 val currencyPreferences = PreferencesHandler(context).CurrencyPreferences()
-                val baseCurrency = currencyPreferences.readSaveCurrency()
+                val baseCurrency = if (BuildConfig.DEBUG) {
+                    "USD"
+                } else {
+                    currencyPreferences.readSaveCurrency()
+                }
                 if (!DatabaseCheckpoint(context).doesTableExist(baseCurrency)) {
                     Log.d("UpdateCloudData", "Updating Database")
 
@@ -98,9 +103,14 @@ class UpdateCurrenciesRatesData (var systemCheckpoints: SystemCheckpoints) {
     }
 
     private fun jsonObjectRequest(context: Context, currencyDataViewModel: CurrencyDataViewModel) {
+
         val jsonObjectRequest = JsonObjectRequest(
             Request.Method.GET,
-            Endpoint().BASE_Link + PreferencesHandler(context).CurrencyPreferences().readSaveCurrency(),
+            Endpoint().BASE_Link + if (BuildConfig.DEBUG) {
+                "USD"
+            } else {
+                PreferencesHandler(context).CurrencyPreferences().readSaveCurrency()
+            },
             null,
             Response.Listener<JSONObject?> { response ->
                 Log.d("Json Result: Currency Rates", response.toString())
