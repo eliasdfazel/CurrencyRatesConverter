@@ -18,6 +18,9 @@ data class WriteRatesDatabaseEssentials(var roomDatabase: RoomDatabase, var base
 
 class WriteRatesDatabase(var context: Context, private var writeRatesDatabaseEssentials: WriteRatesDatabaseEssentials) {
 
+    /**
+     *  A Checkpoint to determine which Database Query should perform.
+     */
     fun handleRatesDatabase() {
         if (!DatabaseCheckpoint(context).doesTableExist(writeRatesDatabaseEssentials.roomDatabase, writeRatesDatabaseEssentials.baseCurrency)) {
             insertAllData()
@@ -26,6 +29,9 @@ class WriteRatesDatabase(var context: Context, private var writeRatesDatabaseEss
         }
     }
 
+    /**
+     *  Creating Table of Given Base Currency Name & Inserting Data.
+     */
     private fun insertAllData()
             = CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
 
@@ -55,6 +61,11 @@ class WriteRatesDatabase(var context: Context, private var writeRatesDatabaseEss
         writeRatesDatabaseEssentials.roomDatabase.close()
     }
 
+    /**
+     *  Updating Table of given source currency.
+     *
+     *  & A checkpoint to create database table if not exist.
+     */
     private fun updateAllData()
             = CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
 

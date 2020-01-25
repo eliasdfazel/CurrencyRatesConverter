@@ -12,6 +12,9 @@ import xyz.world.currency.rate.converter.data.database.DatabasePath
 
 class ReadCurrenciesDatabase(var context: Context) {
 
+    /**
+     *  Retrieve All Supported Currencies List from the Main Database Table.
+     */
     fun readAllData(currencyDataViewModel: CurrencyDataViewModel) = CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
         val roomDatabaseRead = Room.databaseBuilder(context, DatabaseInterface::class.java,
             DatabasePath.CURRENCY_DATABASE_NAME).build()

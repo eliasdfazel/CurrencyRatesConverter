@@ -13,6 +13,9 @@ import xyz.world.currency.rate.converter.data.database.DatabasePath
 
 class ReadRatesDatabase(var context: Context) {
 
+    /**
+     *  Read Currency Exchange Rates of given currency name.
+     */
     fun readAllData(tableName: String, currencyDataViewModel: CurrencyDataViewModel) = CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
         val recyclerViewItemsDataStructure: ArrayList<RecyclerViewItemsDataStructure> = ArrayList<RecyclerViewItemsDataStructure>()
 

@@ -13,6 +13,9 @@ data class WriteCurrenciesDatabaseEssentials(var databaseInterface: DatabaseInte
 
 class WriteCurrenciesDatabase(var context: Context, var writeCurrenciesDatabaseEssentials: WriteCurrenciesDatabaseEssentials) {
 
+    /**
+     *  Saving List of All Supported Currencies in the Main Table of Database.
+     */
     fun handleCurrenciesDatabase() {
         insertAllData()
     }
