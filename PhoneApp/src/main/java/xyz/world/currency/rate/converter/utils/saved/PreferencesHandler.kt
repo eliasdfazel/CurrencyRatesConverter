@@ -46,6 +46,9 @@ internal class PreferencesHandler(var context: Context) {
         }
 
 
+        /**
+         *  Save Time in Millisecond for the last update of currencies rates.
+         */
         fun saveLastRatesUpdate(valueToSave: Long) {
             with (sharedPreferences.edit()) {
                 this?.putLong("LastRatesUpdate", (valueToSave))
@@ -53,11 +56,16 @@ internal class PreferencesHandler(var context: Context) {
             }
         }
 
+        /**
+         *  Read Time in Millisecond for the last update of currencies rates.
+         */
         fun readLastRatesUpdate() : Long {
             return sharedPreferences.getLong("LastRatesUpdate", 0)
         }
 
-
+        /**
+         *  Save Last Time List Of Support Currencies Updated.
+         */
         fun saveLastCurrencyListUpdate(valueToSave: Long) {
             with (sharedPreferences.edit()) {
                 this?.putLong("LastCurrencyListUpdate", (valueToSave))

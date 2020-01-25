@@ -30,7 +30,8 @@ class CurrencyDataViewModel : ViewModel() {
     private val recyclerViewItemsRatesStructure: ArrayList<RecyclerViewItemsDataStructure> = ArrayList<RecyclerViewItemsDataStructure>()
 
     /**
-     * Loading Data for the First Time from Public API for Unregistered Users.
+     *  Parsing Json Data for the first time after inserting data to database
+     *  I used cached data from memory in this point to read download data instead of database read query.
      */
     fun loadDataFromResult(baseCurrency: String, itemsData: JSONObject) =  CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
         Log.d("ItemDataStructure All Retrofit", "Adding To ArrayList")
@@ -51,7 +52,8 @@ class CurrencyDataViewModel : ViewModel() {
     }
 
     /**
-     * Updating Data for the First Time from Public API for Unregistered Users.
+     *  Parsing Json Data for the after updating data to database
+     *  I used cached data from memory in this point to read download data instead of database read query.
      */
     fun updateDataFromResult(baseCurrency: String, itemsData: JSONObject) =  CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
         Log.d("ItemDataStructure Update Retrofit", "Adding To ArrayList")

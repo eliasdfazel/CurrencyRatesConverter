@@ -13,6 +13,9 @@ import xyz.learn.world.heritage.SavedData.PreferencesHandler
 import xyz.world.currency.rate.converter.R
 import xyz.world.currency.rate.converter.utils.saved.CountryData
 
+/**
+ *  Download Flag of Source Currency. It will return null if flag image not exist.
+ */
 fun downloadAndSetFlagImage(context: Context, imageView: ImageView) {
     Glide.with(context)
         .load(CountryData().flagCountryLink(PreferencesHandler(context).CurrencyPreferences().readSaveCurrency().toLowerCase()))

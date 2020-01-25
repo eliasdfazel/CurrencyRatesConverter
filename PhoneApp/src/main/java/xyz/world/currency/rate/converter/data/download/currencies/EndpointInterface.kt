@@ -3,6 +3,9 @@ package xyz.world.currency.rate.converter.data
 import io.reactivex.Single
 import retrofit2.http.GET
 
+/**
+ *  Endpoint Interface for Retrofit Process.
+ */
 interface EndpointInterface {
 
     //http://api.currencylayer.com/list?access_key=3057d94042a99324b134799aa7c252f9

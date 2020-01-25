@@ -11,11 +11,17 @@ import xyz.world.currency.rate.converter.data.database.DatabasePath
 
 class DatabaseCheckpoint (var context: Context) {
 
+    /**
+     *  Check if database file exists.
+     */
     fun doesBaseDatabaseExist() : Boolean {
 
         return context.getDatabasePath(DatabasePath.CURRENCY_DATABASE_NAME).exists()
     }
 
+    /**
+     *  Check if given table name exists in database
+     */
     fun doesTableExist(roomDatabase: RoomDatabase, tableName: String) : Boolean {
 
         val supportSQLiteDatabase: SupportSQLiteDatabase = roomDatabase.openHelper.writableDatabase
@@ -38,6 +44,9 @@ class DatabaseCheckpoint (var context: Context) {
         }
     }
 
+    /**
+     *  Check if given table name exists in database
+     */
     fun doesTableExist(tableName: String) : Boolean {
         val roomDatabase = Room.databaseBuilder(context, DatabaseInterface::class.java, DatabasePath.CURRENCY_DATABASE_NAME)
             .build()

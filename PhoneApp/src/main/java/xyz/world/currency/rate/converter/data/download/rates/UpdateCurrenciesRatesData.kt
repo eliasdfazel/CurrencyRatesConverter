@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit
 
 
 /**
- * Call for Updating Data on Server Side Or Updating Local Data from Cloud
+ * Call for Updating Local Data from Cloud Or Just Trigger Local Database Read.
  */
 class UpdateCurrenciesRatesData (var systemCheckpoints: SystemCheckpoints) {
 
@@ -110,6 +110,11 @@ class UpdateCurrenciesRatesData (var systemCheckpoints: SystemCheckpoints) {
             .subscribe()
     }
 
+    /**
+     *  API Call to Download New Data:
+     *  1. When user select new source currency.
+     *  2. When user click on refresh button.
+     */
     fun triggerCloudDataUpdateForce(context: Context, currencyDataViewModel: CurrencyDataViewModel)
             = CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
 
@@ -120,7 +125,7 @@ class UpdateCurrenciesRatesData (var systemCheckpoints: SystemCheckpoints) {
 
         val jsonObjectRequest = JsonObjectRequest(
             Request.Method.GET,
-            Endpoint().BASE_Link + if (BuildConfig.DEBUG) {
+            Endpoint.BASE_Link + if (BuildConfig.DEBUG) {
                 /*
                  * CurrencyAPI Free AccessKey Does NOT Support Source Currency Change. The Default Source is USD.
                  * So, I calculate approx Rate Offset based on selected currency exchange rate with USD.

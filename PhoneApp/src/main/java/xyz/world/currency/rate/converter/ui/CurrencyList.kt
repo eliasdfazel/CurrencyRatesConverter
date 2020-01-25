@@ -121,19 +121,8 @@ class CurrencyList : Fragment(), View.OnClickListener, View.OnLongClickListener 
                      * CurrencyAPI Free AccessKey Does NOT Support Source Currency Change. The Default Source is USD.
                      * So, I calculate approx Rate Offset based on selected currency exchange rate with USD.
                      */
-                    CoroutineScope(Dispatchers.IO).launch {
-                        val usdExchange = ReadRatesDatabase(context!!).readSpecificRateFromTableUSD(newBaseCurrency).await()
+                    calculateRatesOffset(newBaseCurrency)
 
-                        val calculateOffset = (1 / usdExchange)
-                        PreferencesHandler(context!!).CurrencyPreferences().saveRateOffset((calculateOffset).toString())
-
-                        currencyAdapter?.multiplyNumber = 1.0
-                        currencyAdapter?.rateOffset = calculateOffset
-
-                        withContext(Dispatchers.Main) {
-                            currencyAdapter?.notifyItemRangeChanged(0, currencyAdapter!!.itemCount, null)
-                        }
-                    }
                 } else {
 
                     UpdateCurrenciesRatesData(systemCheckpoints)
@@ -318,5 +307,25 @@ class CurrencyList : Fragment(), View.OnClickListener, View.OnLongClickListener 
             Toast.LENGTH_LONG)
         toast.setGravity(Gravity.TOP, 0, 0)
         toast.show()
+    }
+
+    /**
+     * CurrencyAPI Free AccessKey Does NOT Support Source Currency Change. The Default Source is USD.
+     * So, I calculate approx Rate Offset based on selected currency exchange rate with USD.
+     */
+    private fun calculateRatesOffset(newBaseCurrency: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val usdExchange = ReadRatesDatabase(context!!).readSpecificRateFromTableUSD(newBaseCurrency).await()
+
+            val calculateOffset = (1 / usdExchange)
+            PreferencesHandler(context!!).CurrencyPreferences().saveRateOffset((calculateOffset).toString())
+
+            currencyAdapter?.multiplyNumber = 1.0
+            currencyAdapter?.rateOffset = calculateOffset
+
+            withContext(Dispatchers.Main) {
+                currencyAdapter?.notifyItemRangeChanged(0, currencyAdapter!!.itemCount, null)
+            }
+        }
     }
 }

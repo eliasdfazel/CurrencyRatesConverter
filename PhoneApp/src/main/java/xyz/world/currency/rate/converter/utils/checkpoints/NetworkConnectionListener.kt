@@ -7,6 +7,9 @@ import androidx.fragment.app.FragmentActivity
 import kotlinx.android.synthetic.main.entry_configurations.*
 import xyz.world.currency.rate.converter.R
 
+/**
+ *  Listen on Network Connectivity to inform user when device is diconnected.
+ */
 class NetworkConnectionListener(var activity: FragmentActivity) :  ConnectivityManager.NetworkCallback() {
 
     val connectivityManager = activity.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager

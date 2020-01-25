@@ -29,9 +29,8 @@ import xyz.world.currency.rate.converter.utils.checkpoints.SystemCheckpoints
 class UpdateSupportedListData (var systemCheckpoints: SystemCheckpoints) {
 
     /**
-     *  Download JSON Data from a Public API call on device.
-     *  & Parse data on device.
-     *  Process will trigger each second
+     *  Download JSON Data from a API call .
+     *  & Parse data of Support Currencies List.
      */
     @SuppressLint("CheckResult")
     fun triggerSupportedCurrenciesUpdate(context: Context, currencyDataViewModel: CurrencyDataViewModel) = CoroutineScope(Dispatchers.IO).launch {

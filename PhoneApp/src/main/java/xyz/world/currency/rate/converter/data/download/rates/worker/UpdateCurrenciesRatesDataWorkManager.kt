@@ -29,7 +29,14 @@ import java.util.concurrent.TimeUnit
  */
 class UpdateCurrenciesRatesDataWorkManager {
 
-
+    /*
+     * UpdateCurrenciesRatesDataWorkManager().triggerCloudDataUpdateScheduleWorkManager(context!!)
+     *
+     * To have Even Better Friendly App with CPU & Battery, I didn't use fixed scheduler to download & update database from servers.
+     * So, I added an Observer to repeat every 30 minutes until the app is running.
+     * & to avoid recalling for fetching data from server every time user open the app, I am saving time when Observable Subscription occur...
+     * then compare saved time with next time to check if it is been 30 minutes since last API Call.
+     */
     fun triggerCloudDataUpdateScheduleWorkManager(context: Context) {
         val workBuilder = PeriodicWorkRequest.Builder(
             RatesUpdatingWorker::class.java,
@@ -49,7 +56,7 @@ class UpdateCurrenciesRatesDataWorkManager {
             requestQueue.add(
                 JsonObjectRequest(
                     Request.Method.GET,
-                    Endpoint().BASE_Link + if (BuildConfig.DEBUG) {
+                    Endpoint.BASE_Link + if (BuildConfig.DEBUG) {
                         "USD"
                     } else {
                         PreferencesHandler(context).CurrencyPreferences().readSaveCurrency()
