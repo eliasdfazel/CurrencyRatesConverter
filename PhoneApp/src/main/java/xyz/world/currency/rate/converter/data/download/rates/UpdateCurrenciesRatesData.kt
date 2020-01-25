@@ -59,7 +59,7 @@ class UpdateCurrenciesRatesData (var systemCheckpoints: SystemCheckpoints) {
         disposeObservable = Observable
             .interval(1, (30*60), TimeUnit.SECONDS)
             .doOnSubscribe {
-                PreferencesHandler(context).CurrencyPreferences().saveLastRatesUpdate(System.currentTimeMillis())
+
             }
             .repeatUntil {
                 currentBaseCurrency != CurrencyDataViewModel.baseCurrency.value
@@ -144,6 +144,7 @@ class UpdateCurrenciesRatesData (var systemCheckpoints: SystemCheckpoints) {
                         val currencyRates = response.getJSONObject(RatesJsonDataStructure.QUOTES)
                         val updateTimestamp: Long = System.currentTimeMillis()
 
+                        PreferencesHandler(context).CurrencyPreferences().saveLastRatesUpdate(updateTimestamp)
                         val roomDatabase = Room.databaseBuilder(context, DatabaseInterface::class.java, DatabasePath.CURRENCY_DATABASE_NAME)
                             .build()
 
