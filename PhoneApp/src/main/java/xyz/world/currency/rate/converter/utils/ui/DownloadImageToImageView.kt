@@ -16,6 +16,7 @@ import xyz.world.currency.rate.converter.utils.saved.CountryData
 fun downloadAndSetFlagImage(context: Context, imageView: ImageView) {
     Glide.with(context)
         .load(CountryData().flagCountryLink(PreferencesHandler(context).CurrencyPreferences().readSaveCurrency().toLowerCase()))
+        .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
         .diskCacheStrategy(DiskCacheStrategy.DATA)
         .addListener(object : RequestListener<Drawable> {
             override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {

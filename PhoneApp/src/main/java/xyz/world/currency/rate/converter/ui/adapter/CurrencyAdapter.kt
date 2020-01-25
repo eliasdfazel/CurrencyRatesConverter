@@ -67,6 +67,7 @@ class CurrencyAdapter(var context: Context) : RecyclerView.Adapter<ItemViewHolde
 
             Glide.with(context)
                 .load(CountryData().flagCountryLink(recyclerViewItemsDataStructure[position].currencyCode.toLowerCase()))
+                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                 .diskCacheStrategy(DiskCacheStrategy.DATA)
                 .into(itemViewHolder.countryFlag)
         } else {
@@ -87,6 +88,7 @@ class CurrencyAdapter(var context: Context) : RecyclerView.Adapter<ItemViewHolde
 
         Glide.with(context)
             .load(CountryData().flagCountryLink(recyclerViewItemsDataStructure[position].currencyCode.toLowerCase()))
+            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
             .diskCacheStrategy(DiskCacheStrategy.DATA)
             .into(itemViewHolder.countryFlag)
 

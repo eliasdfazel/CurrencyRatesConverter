@@ -56,7 +56,7 @@ class UpdateCurrenciesRatesDataWorkManager {
                     },
                     null,
                     Response.Listener<JSONObject?> { response ->
-                        Log.d("Json Result: Currency Rates", response.toString())
+                        Log.d("JsonResult: Currency Rates", response.toString())
 
                         if (response != null && response.getBoolean(RatesJsonDataStructure.SUCCESS)) {
                             try {

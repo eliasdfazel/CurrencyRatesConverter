@@ -17,8 +17,7 @@ class ReadRatesDatabase(var context: Context) {
         val recyclerViewItemsDataStructure: ArrayList<RecyclerViewItemsDataStructure> = ArrayList<RecyclerViewItemsDataStructure>()
 
         val roomDatabaseRead = Room.databaseBuilder(context, DatabaseInterface::class.java,
-            DatabasePath.CURRENCY_DATABASE_NAME
-        )
+            DatabasePath.CURRENCY_DATABASE_NAME)
             .build()
 
         val supportSQLiteDatabase: SupportSQLiteDatabase = roomDatabaseRead.openHelper.readableDatabase
@@ -36,9 +35,11 @@ class ReadRatesDatabase(var context: Context) {
 
             cursor.moveToNext()
         }
-        roomDatabaseRead.close()
 
         currencyDataViewModel.recyclerViewItemsRatesExchange.postValue(recyclerViewItemsDataStructure)
+
+        cursor.close()
+        roomDatabaseRead.close()
     }
 
     /**
@@ -47,14 +48,18 @@ class ReadRatesDatabase(var context: Context) {
      */
     fun readSpecificRateFromTableUSD(currencyCode: String) : Deferred<Double> = CoroutineScope(Dispatchers.IO).async {
         val roomDatabaseRead = Room.databaseBuilder(context, DatabaseInterface::class.java,
-            DatabasePath.CURRENCY_DATABASE_NAME
-        )
+            DatabasePath.CURRENCY_DATABASE_NAME)
             .build()
 
         val supportSQLiteDatabase: SupportSQLiteDatabase = roomDatabaseRead.openHelper.readableDatabase
         val cursor: Cursor = supportSQLiteDatabase.query("SELECT * FROM USD WHERE CurrencyCode='${currencyCode}'")
         cursor.moveToFirst()
 
-        cursor.getDouble(cursor.getColumnIndex(RoomDatabaseColumn.CurrencyRate))
+        val currencyRate = cursor.getDouble(cursor.getColumnIndex(RoomDatabaseColumn.CurrencyRate))
+
+        cursor.close()
+        roomDatabaseRead.close()
+
+        currencyRate
     }
 }

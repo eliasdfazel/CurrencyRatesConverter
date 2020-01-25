@@ -47,8 +47,7 @@ class CurrencyDataViewModel : ViewModel() {
             }
         }
 
-        recyclerViewItemsRatesExchange
-            .postValue(recyclerViewItemsDataStructure)
+        recyclerViewItemsRatesExchange.postValue(recyclerViewItemsDataStructure)
     }
 
     /**
@@ -69,7 +68,6 @@ class CurrencyDataViewModel : ViewModel() {
             }
         }
 
-        recyclerViewItemsRatesExchange
-            .postValue(recyclerViewItemsRatesStructure)
+        recyclerViewItemsRatesExchange.postValue(recyclerViewItemsRatesStructure)
     }
 }

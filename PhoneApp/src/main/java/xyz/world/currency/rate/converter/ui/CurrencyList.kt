@@ -48,6 +48,7 @@ class CurrencyList : Fragment(), View.OnClickListener, View.OnLongClickListener 
 
     var currenciesListData: ArrayList<DatabaseDataModel> = ArrayList<DatabaseDataModel>()
 
+    lateinit var updateCurrenciesRatesData : UpdateCurrenciesRatesData
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -90,19 +91,23 @@ class CurrencyList : Fragment(), View.OnClickListener, View.OnLongClickListener 
                     if (it.size > 0) {
                         progressBar.visibility = View.GONE
                         activity!!.toolbarOption.setImageDrawable(context?.getDrawable(R.drawable.refresh_icon))
+
+                        currencyAdapter = CurrencyAdapter(context!!)
+                        currencyAdapter?.recyclerViewItemsDataStructure = it
+
+                        loadView.adapter = currencyAdapter
+                        currencyAdapter!!.notifyDataSetChanged()
+
+                        Log.d("LiveData", "Setup Adapter")
                     } else {
                         activity!!.toolbarOption.setImageDrawable(context?.getDrawable(R.drawable.no_internet))
                     }
-
-                    currencyAdapter = CurrencyAdapter(context!!)
-                    currencyAdapter?.recyclerViewItemsDataStructure = it
-
-                    loadView.adapter = currencyAdapter
-                    currencyAdapter!!.notifyDataSetChanged()
                 } else {
 
                     currencyAdapter?.recyclerViewItemsDataStructure = it
                     currencyAdapter?.notifyItemRangeChanged(0, currencyAdapter!!.itemCount, it)
+
+                    Log.d("LiveData", "Updating Current Data")
                 }
 
                 Log.d("LiveData", "Observing ItemsDataStructure")
@@ -140,7 +145,7 @@ class CurrencyList : Fragment(), View.OnClickListener, View.OnLongClickListener 
                         currentCurrencyFlag)
                 }, 1000)
 
-                Log.d("Base Currency Changed", newBaseCurrency)
+                Log.d("BaseCurrencyChanged", newBaseCurrency)
             })
 
         activity?.toolbarOption!!.setOnClickListener {
@@ -154,8 +159,8 @@ class CurrencyList : Fragment(), View.OnClickListener, View.OnLongClickListener 
             }
         }
 
-        UpdateCurrenciesRatesData(systemCheckpoints)
-            .triggerCloudDataUpdateSchedule(context!!, currencyDataViewModel)
+        updateCurrenciesRatesData = UpdateCurrenciesRatesData(systemCheckpoints)
+        updateCurrenciesRatesData.triggerCloudDataUpdateSchedule(context!!, currencyDataViewModel)
 
         UpdateSupportedListData(systemCheckpoints)
             .triggerSupportedCurrenciesUpdate(context!!, currencyDataViewModel)
@@ -168,6 +173,7 @@ class CurrencyList : Fragment(), View.OnClickListener, View.OnLongClickListener 
             NetworkConnectionListener(it)
         }
 
+        typeRate.clearFocus()
         typeRate.setOnEditorActionListener { textView, actionId, event ->
             when (actionId) {
                 EditorInfo.IME_ACTION_DONE -> {
@@ -236,6 +242,12 @@ class CurrencyList : Fragment(), View.OnClickListener, View.OnLongClickListener 
         })
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+
+        updateCurrenciesRatesData.clearObservable()
+    }
+
     override fun onClick(clickedView: View?) {
 
         if (clickedView is ConstraintLayout) {
@@ -270,6 +282,7 @@ class CurrencyList : Fragment(), View.OnClickListener, View.OnLongClickListener 
             codeTextView.text = databaseDataModel.CurrencyCode
             Glide.with(context!!)
                 .load(CountryData().flagCountryLink(databaseDataModel.CurrencyCode.toLowerCase()))
+                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                 .diskCacheStrategy(DiskCacheStrategy.DATA)
                 .into(flagImageView)
 

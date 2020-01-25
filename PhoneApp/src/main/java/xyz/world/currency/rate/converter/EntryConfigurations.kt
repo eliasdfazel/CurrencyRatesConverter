@@ -1,6 +1,8 @@
 package xyz.world.currency.rate.converter
 
+import android.app.ActivityOptions
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.net.ConnectivityManager
 import android.net.Network
@@ -54,5 +56,13 @@ class EntryConfigurations : FragmentActivity() {
         window.navigationBarColor = getColor(R.color.colorPrimaryDark)
 
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
+    }
+
+    override fun onBackPressed() {
+        val homeScreen = Intent(Intent.ACTION_MAIN).apply {
+            this.addCategory(Intent.CATEGORY_HOME)
+            this.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        }
+        startActivity(homeScreen, ActivityOptions.makeCustomAnimation(applicationContext, android.R.anim.fade_in, android.R.anim.fade_out).toBundle())
     }
 }

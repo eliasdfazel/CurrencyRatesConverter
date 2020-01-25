@@ -79,7 +79,7 @@ class UpdateSupportedListData (var systemCheckpoints: SystemCheckpoints) {
                     }
                 }
             }, {
-                Log.d("Retrofit Error", "${it.message}")
+                Log.d("RetrofitError", "${it.message}")
             })
         }
     }

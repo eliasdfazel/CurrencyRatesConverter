@@ -8,6 +8,7 @@ import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import io.reactivex.Observable
+import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -39,6 +40,7 @@ class UpdateCurrenciesRatesData (var systemCheckpoints: SystemCheckpoints) {
      */
     var currentBaseCurrency: String? = null
 
+    lateinit var disposeObservable: Disposable
     /**
      * Invoking Cloud Function to update the currency rates & date in database.
      */
@@ -46,13 +48,15 @@ class UpdateCurrenciesRatesData (var systemCheckpoints: SystemCheckpoints) {
 
 
         /*
-         *
-         *
          * UpdateCurrenciesRatesDataWorkManager().triggerCloudDataUpdateScheduleWorkManager(context!!)
          *
+         * To have Even Better Friendly App with CPU & Battery, I didn't use fixed scheduler to download & update database from servers.
+         * So, I added an Observer to repeat every 30 minutes until the app is running.
+         * & to avoid recalling for fetching data from server every time user open the app, I am saving time when Observable Subscription occur...
+         * then compare saved time with next time to check if it is been 30 minutes since last API Call.
          */
 
-        Observable
+        disposeObservable = Observable
             .interval(1, (30*60), TimeUnit.SECONDS)
             .doOnSubscribe {
                 PreferencesHandler(context).CurrencyPreferences().saveLastRatesUpdate(System.currentTimeMillis())
@@ -91,7 +95,7 @@ class UpdateCurrenciesRatesData (var systemCheckpoints: SystemCheckpoints) {
                             currencyDataViewModel)
 
                     } else {
-                        Log.d("Getting Information", "Reading Database")
+                        Log.d("GettingInformation", "Reading Database")
 
                         ReadRatesDatabase(context)
                             .readAllData(baseCurrency, currencyDataViewModel)
@@ -119,7 +123,7 @@ class UpdateCurrenciesRatesData (var systemCheckpoints: SystemCheckpoints) {
             },
             null,
             Response.Listener<JSONObject?> { response ->
-                Log.d("Json Result: Currency Rates", response.toString())
+                Log.d("JsonResult: Currency Rates", response.toString())
 
                 if (response != null && response.getBoolean(RatesJsonDataStructure.SUCCESS)) {
                     try {
@@ -155,5 +159,11 @@ class UpdateCurrenciesRatesData (var systemCheckpoints: SystemCheckpoints) {
 
         val requestQueue = Volley.newRequestQueue(context)
         requestQueue.add(jsonObjectRequest)
+    }
+
+    fun clearObservable() {
+        if (disposeObservable != null && !disposeObservable.isDisposed) {
+            disposeObservable.dispose()
+        }
     }
 }
