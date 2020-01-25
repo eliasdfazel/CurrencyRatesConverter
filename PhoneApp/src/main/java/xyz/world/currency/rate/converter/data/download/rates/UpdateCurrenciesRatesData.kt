@@ -74,6 +74,10 @@ class UpdateCurrenciesRatesData (var systemCheckpoints: SystemCheckpoints) {
 
                 val currencyPreferences = PreferencesHandler(context).CurrencyPreferences()
                 val baseCurrency = if (BuildConfig.DEBUG) {
+                    /*
+                     * CurrencyAPI Free AccessKey Does NOT Support Source Currency Change. The Default Source is USD.
+                     * So, I calculate approx Rate Offset based on selected currency exchange rate with USD.
+                     */
                     "USD"
                 } else {
                     currencyPreferences.readSaveCurrency()
@@ -117,6 +121,10 @@ class UpdateCurrenciesRatesData (var systemCheckpoints: SystemCheckpoints) {
         val jsonObjectRequest = JsonObjectRequest(
             Request.Method.GET,
             Endpoint().BASE_Link + if (BuildConfig.DEBUG) {
+                /*
+                 * CurrencyAPI Free AccessKey Does NOT Support Source Currency Change. The Default Source is USD.
+                 * So, I calculate approx Rate Offset based on selected currency exchange rate with USD.
+                 */
                 "USD"
             } else {
                 PreferencesHandler(context).CurrencyPreferences().readSaveCurrency()

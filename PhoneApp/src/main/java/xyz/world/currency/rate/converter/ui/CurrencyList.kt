@@ -117,7 +117,7 @@ class CurrencyList : Fragment(), View.OnClickListener, View.OnLongClickListener 
             Observer { newBaseCurrency ->
 
                 if (BuildConfig.DEBUG) {
-                    /**
+                    /*
                      * CurrencyAPI Free AccessKey Does NOT Support Source Currency Change. The Default Source is USD.
                      * So, I calculate approx Rate Offset based on selected currency exchange rate with USD.
                      */
