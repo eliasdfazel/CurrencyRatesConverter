@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
 import net.geekstools.floatshort.PRO.Widget.RoomDatabase.DatabaseDataModel
 import org.json.JSONObject
 
-class CurrencyDataViewModel : ViewModel() {
+open class CurrencyDataViewModel : ViewModel() {
 
     companion object {
         val baseCurrency: MutableLiveData<String> by lazy {
@@ -34,7 +34,7 @@ class CurrencyDataViewModel : ViewModel() {
      *  I used cached data from memory in this point to read download data instead of database read query.
      */
     fun loadDataFromResult(baseCurrency: String, itemsData: JSONObject) =  CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
-        Log.d("ItemDataStructure All Retrofit", "Adding To ArrayList")
+        Log.d("LoadDataAll", "Adding To ArrayList")
         recyclerViewItemsDataStructure.clear()
 
         itemsData.keys().forEach {
@@ -56,7 +56,7 @@ class CurrencyDataViewModel : ViewModel() {
      *  I used cached data from memory in this point to read download data instead of database read query.
      */
     fun updateDataFromResult(baseCurrency: String, itemsData: JSONObject) =  CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
-        Log.d("ItemDataStructure Update Retrofit", "Adding To ArrayList")
+        Log.d("UpdateDataAll", "Adding To ArrayList")
         recyclerViewItemsRatesStructure.clear()
 
         itemsData.keys().forEach {

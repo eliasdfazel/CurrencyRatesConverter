@@ -40,6 +40,8 @@ class UpdateCurrenciesRatesData (var systemCheckpoints: SystemCheckpoints) {
      */
     var currentBaseCurrency: String? = null
 
+    var saveLastRatesUpdate: Long = System.currentTimeMillis()
+
     lateinit var disposeObservable: Disposable
     /**
      * Invoking Cloud Function to update the currency rates & date in database.
@@ -59,7 +61,7 @@ class UpdateCurrenciesRatesData (var systemCheckpoints: SystemCheckpoints) {
         disposeObservable = Observable
             .interval(1, (30*60), TimeUnit.SECONDS)
             .doOnSubscribe {
-
+                saveLastRatesUpdate = System.currentTimeMillis()
             }
             .repeatUntil {
                 currentBaseCurrency != CurrencyDataViewModel.baseCurrency.value
@@ -144,7 +146,7 @@ class UpdateCurrenciesRatesData (var systemCheckpoints: SystemCheckpoints) {
                         val currencyRates = response.getJSONObject(RatesJsonDataStructure.QUOTES)
                         val updateTimestamp: Long = System.currentTimeMillis()
 
-                        PreferencesHandler(context).CurrencyPreferences().saveLastRatesUpdate(updateTimestamp)
+                        PreferencesHandler(context).CurrencyPreferences().saveLastRatesUpdate(saveLastRatesUpdate)
                         val roomDatabase = Room.databaseBuilder(context, DatabaseInterface::class.java, DatabasePath.CURRENCY_DATABASE_NAME)
                             .build()
 
