@@ -98,6 +98,8 @@ class CurrencyList : Fragment(), View.OnClickListener, View.OnLongClickListener 
                         loadView.adapter = currencyAdapter
                         currencyAdapter!!.notifyDataSetChanged()
 
+                        loadView.smoothScrollToPosition(0)
+
                         Log.d("LiveData", "Setup Adapter")
                     } else {
                         activity!!.toolbarOption.setImageDrawable(context?.getDrawable(R.drawable.no_internet))

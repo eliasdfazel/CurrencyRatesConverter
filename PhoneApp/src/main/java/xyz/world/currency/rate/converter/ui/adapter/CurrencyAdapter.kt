@@ -59,6 +59,7 @@ class CurrencyAdapter(var context: Context) : RecyclerView.Adapter<ItemViewHolde
 
             itemViewHolder.currencyRate.text = (recyclerViewItemsDataStructure[position].currencyRate.times((multiplyNumber * rateOffset)).formatToThreeDigitAfterPoint())
             itemViewHolder.currencyName.text = recyclerViewItemsDataStructure[position].currencyCode
+
             firestore.document(DatabasePath.FIRESTORE_REFERENCE_DIRECTORY + recyclerViewItemsDataStructure[position].currencyCode).get().addOnSuccessListener {
                 val countryName = it.getString("CountryName")
 
@@ -80,6 +81,7 @@ class CurrencyAdapter(var context: Context) : RecyclerView.Adapter<ItemViewHolde
 
         itemViewHolder.currencyRate.text = ((recyclerViewItemsDataStructure[position].currencyRate.times(multiplyNumber)).formatToThreeDigitAfterPoint())
         itemViewHolder.currencyName.text = recyclerViewItemsDataStructure[position].currencyCode
+
         firestore.document(DatabasePath.FIRESTORE_REFERENCE_DIRECTORY + recyclerViewItemsDataStructure[position].currencyCode).get().addOnSuccessListener {
             val countryName = it.getString("CountryName")
 

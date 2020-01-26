@@ -76,34 +76,12 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-
-
-    <ScrollView
-        android:id="@+id/nestedScrollView"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/loadView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:requiresFadingEdge="vertical"
-        android:fadingEdge="vertical"
-        android:fadingEdgeLength="2dp"
-        android:scrollbars="vertical"
-        android:smoothScrollbar="true"
-
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/textInputLayout">
-
-        <RelativeLayout
-            android:id="@+id/scrollRelativeLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/loadView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:isScrollContainer="false"
-                android:nestedScrollingEnabled="false" />
-        </RelativeLayout>
-    </ScrollView>
+        app:layout_constraintBottom_toTopOf="@id/textInputLayout" />
 
     <ProgressBar
         android:id="@+id/progressBar"

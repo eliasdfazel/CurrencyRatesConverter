@@ -71,6 +71,7 @@ class UpdateCurrenciesRatesData (var systemCheckpoints: SystemCheckpoints) {
                 systemCheckpoints.networkConnection()
             }
             .subscribeOn(Schedulers.io())
+            .observeOn(Schedulers.io())
             .doOnNext {
                 Log.d("Observable", "${it}")
 
@@ -105,6 +106,7 @@ class UpdateCurrenciesRatesData (var systemCheckpoints: SystemCheckpoints) {
 
                         ReadRatesDatabase(context)
                             .readAllData(baseCurrency, currencyDataViewModel)
+
                     }
                 }
             }
